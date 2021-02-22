@@ -12,6 +12,9 @@
  * having to deal with raw OpenGL
  */
 
+#include <glm/vec4.hpp>
+#include <glm/vec2.hpp>
+
 class Renderer {
     SINGLETON(Renderer);
 private:
@@ -22,5 +25,6 @@ public:
 
     void RenderBegin();
     void RenderSprite(const Sprite &sprite);
+    void RenderQuad(const glm::vec2 &translation, const glm::vec4 &color);
     void RenderEnd();
 };

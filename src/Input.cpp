@@ -1,5 +1,7 @@
 #include "Input.hpp"
 
+#include <string.h>
+
 void Input::Init()
 {
     m_MousePosition[0] = 0;

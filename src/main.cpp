@@ -18,7 +18,7 @@ int main()
     SDL_assert(pWindow);
 
     Renderer::Get().Init(pWindow);
-    Game::Get().Init();
+    Game::Get().Init(pWindow);
     
     bool bRunning = 1;
     SDL_Event event;
