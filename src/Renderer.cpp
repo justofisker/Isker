@@ -16,9 +16,17 @@ void Renderer::Init(SDL_Window *pWindow)
 {
     SDL_GLContext context = SDL_GL_CreateContext(pWindow);
 
-    SDL_assert(context);
-
-    SDL_assert(gladLoadGL());
+    if (!context)
+    {
+        SDL_Log("Failed to create OpenGL context!\n");
+        exit(0);
+    }
+    
+    if (!gladLoadGL())
+    {
+        SDL_Log("Failed to Load glad!\n");
+        exit(0);
+    }
 
     m_pWindow = pWindow;
     m_OpenGLContext = context;
@@ -27,7 +35,7 @@ void Renderer::Init(SDL_Window *pWindow)
 
     m_2DShader = std::make_unique<Shader>("asset/shader/color_vert.glsl", "asset/shader/color_frag.glsl");
     m_2DShader->Bind();
-    int textures[32] { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31 };
+    int textures[32] = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31 };
     m_2DShader->SetUniform1iv("u_Textures", textures, 32);
 }
 
@@ -36,10 +44,7 @@ void Renderer::RenderBegin()
     int width, height;
     SDL_GetWindowSize(m_pWindow, &width, &height);
     glViewport(0, 0, width, height);
-    if(Input::Get().IsKeyPressed(SDLK_l))
-        glClearColor(1.0f, 0.0f, 0.0f, 1.0f);
-    else
-        glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+    glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 }
 
@@ -74,7 +79,7 @@ void Renderer::RenderSprite(std::shared_ptr<Sprite> sprite, const glm::vec2 &tra
 }
 
 
-void Renderer::RenderQuad(const glm::vec2 &translation, const glm::vec4 &color)
+void Renderer::RenderQuad(const glm::vec2 &translation, const glm::vec2 &size, const glm::vec4 &color)
 {
     m_Vertices[0 + m_QuadCount * 4] = Vertex{ glm::vec2(-100.0f + translation.x, -100.0f + translation.y), glm::vec2(0.0f, 0.0f), color, -1 };
     m_Vertices[1 + m_QuadCount * 4] = Vertex{ glm::vec2( 100.0f + translation.x, -100.0f + translation.y), glm::vec2(1.0f, 0.0f), color, -1 };
@@ -87,6 +92,13 @@ void Renderer::RenderEnd()
 {
     if(m_QuadCount)
     {
+        glEnable(GL_CULL_FACE);
+        glCullFace(GL_BACK);
+        glFrontFace(GL_CCW);
+
+        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+        glEnable(GL_BLEND);
+
         int width, height;
         SDL_GetWindowSize(m_pWindow, &width, &height);
         glm::mat4 projection = glm::ortho(0.0f, (float)width, 0.0f, (float)height, -1.0f, 1.0f);

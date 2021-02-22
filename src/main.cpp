@@ -7,7 +7,11 @@
 
 int main()
 {
-    SDL_assert(SDL_Init(SDL_INIT_VIDEO) == 0);
+    if(SDL_Init(SDL_INIT_VIDEO) != 0)
+    {
+        SDL_Log("Failed SDL Init!\n");
+        exit(0);
+    }
 
     SDL_Window *pWindow = SDL_CreateWindow("Ikser",
         SDL_WINDOWPOS_CENTERED,
@@ -15,10 +19,15 @@ int main()
         1280, 720,
         SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE | SDL_WINDOW_ALLOW_HIGHDPI);
     
-    SDL_assert(pWindow);
+    if(!pWindow)
+    {
+        SDL_Log("Failed to create window!\n");
+        exit(0);
+    }
 
     Renderer::Get().Init(pWindow);
     Game::Get().Init(pWindow);
+    Input::Get().Init();
     
     bool bRunning = 1;
     SDL_Event event;
@@ -60,7 +69,7 @@ int main()
             delta = 0.1f;
 
         Game::Get().Frame(delta);
-        Input::Get().Frame();
+        //Input::Get().Frame();
     }
 
     SDL_DestroyWindow(pWindow);

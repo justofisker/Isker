@@ -9,7 +9,7 @@
 class Game {
     SINGLETON(Game);
 private:
-    SDL_Window *m_pWindow;
+    SDL_Window *m_pWindow = nullptr;
 public:
     void Init(SDL_Window *pWindow);
     void Frame(float delta);

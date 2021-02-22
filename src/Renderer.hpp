@@ -44,7 +44,7 @@ public:
 
     void RenderBegin();
     void RenderSprite(std::shared_ptr<Sprite> sprite, const glm::vec2 &translation, const glm::vec2 &scale = glm::vec2(1.0f), float rotation = 0.0f);
-    void RenderQuad(const glm::vec2 &translation, const glm::vec4 &color);
+    void RenderQuad(const glm::vec2 &translation, const glm::vec2 &size, const glm::vec4 &color = glm::vec4(1.0f));
     void RenderEnd();
 private:
     void CreateQuadBuffer(int max_count);
