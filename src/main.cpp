@@ -51,8 +51,15 @@ int main()
                 break;
             }
         }
+        
+        static Uint64 last_frame = SDL_GetPerformanceCounter();
+        Uint64 now = SDL_GetPerformanceCounter();
+        float delta = (float)(now - last_frame) / SDL_GetPerformanceFrequency();
+        last_frame = now;
+        if (delta >= 0.1f)
+            delta = 0.1f;
 
-        Game::Get().Frame();
+        Game::Get().Frame(delta);
         Input::Get().Frame();
     }
 

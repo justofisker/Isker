@@ -10,4 +10,8 @@ public:
     Sprite() = delete;
     Sprite(const std::string &file_path);
     void Bind(unsigned char slot) const;
+
+    inline int GetWidth() const { return width; }
+    inline int GetHeight() const { return height; }
+    inline int GetChannels() const { return channels; }
 };

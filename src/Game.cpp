@@ -5,18 +5,15 @@
 #include "Input.hpp"
 #include "Sprite.hpp"
 
-Sprite *sprite;
-
 void Game::Init(SDL_Window *pWindow)
 {
     m_pWindow = pWindow;
-    
-    sprite = new Sprite("asset/image/god.png");
 }
 
-void Game::Frame()
+void Game::Frame(float delta)
 {
-    // Process
+    static std::shared_ptr<Sprite> GodSprite =   std::make_shared<Sprite>("asset/image/god.jpg");
+    static std::shared_ptr<Sprite> MarioSprite = std::make_shared<Sprite>("asset/image/gansta_mario.jpg");
 
     auto [width, height] = GetGameWindowSize();
 
@@ -24,7 +21,9 @@ void Game::Frame()
 
     Renderer::Get().RenderQuad(glm::vec2(width / 2 + 250, height / 2), glm::vec4(0.4f, 0.7f, 0.3f, 1.0f));
 
-    Renderer::Get().RenderSprite(*sprite, glm::vec2(width / 2, height / 2));
+    Renderer::Get().RenderSprite(MarioSprite, glm::vec2(width / 2 - 500, height / 2 - 100), glm::vec2(0.4f));
+
+    Renderer::Get().RenderSprite(GodSprite, glm::vec2(width / 2, height / 2), glm::vec2(0.4f));
 
     Renderer::Get().RenderEnd();
 }

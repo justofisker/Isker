@@ -14,6 +14,10 @@ Sprite::Sprite(const std::string &file_path)
         return;
     }
 
+    width = w;
+    height = h;
+    channels = c;
+
     glGenTextures(1, &m_TextureID);
     glBindTexture(GL_TEXTURE_2D, m_TextureID);
 

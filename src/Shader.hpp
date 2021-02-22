@@ -18,6 +18,7 @@ public:
     void SetUniform3f(const std::string &uniform, const glm::vec3 &vec);
     void SetUniform4f(const std::string &uniform, const glm::vec4 &vec);
     void SetUniform1i(const std::string &uniform, int v);
+    void SetUniform1iv(const std::string &uniform, int *v, int count);
     void SetUniformMat4(const std::string &uniform, const glm::mat4 &mat);
 private:
     int GetUniformLoc(const std::string &uniform);

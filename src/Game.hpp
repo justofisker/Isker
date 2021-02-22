@@ -12,6 +12,6 @@ private:
     SDL_Window *m_pWindow;
 public:
     void Init(SDL_Window *pWindow);
-    void Frame();
+    void Frame(float delta);
     std::pair<int, int> GetGameWindowSize();
 };

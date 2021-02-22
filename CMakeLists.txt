@@ -13,7 +13,7 @@ set (source
     "${PROJECT_SOURCE_DIR}/src/Mesh.cpp"
     "${PROJECT_SOURCE_DIR}/src/Shader.cpp"
     "${PROJECT_SOURCE_DIR}/thirdparty/glad/src/glad.c"
-    "${PROJECT_SOURCE_DIR}/src/stb_image.c"
+    "${PROJECT_SOURCE_DIR}/src/one_time_implements.c"
     )
 
 if (UNIX)
