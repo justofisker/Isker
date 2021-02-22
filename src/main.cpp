@@ -53,6 +53,7 @@ int main()
         }
 
         Game::Get().Frame();
+        Input::Get().Frame();
     }
 
     SDL_DestroyWindow(pWindow);

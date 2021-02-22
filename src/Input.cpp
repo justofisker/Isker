@@ -17,17 +17,17 @@ void Input::Frame()
     m_MouseMotion[1] = 0;
     m_MouseWheelDirection = 0;
 
-    //for(int i = 0; i < SDL_NUM_SCANCODES; i++)
-    //    m_KeyState[i] = m_KeyState[i] & (0xFF ^ BUTTONSTATEFLAG_JUST_PRESSED);
-//
-    //for(int i = 0; i < 5; i++)
-    //    m_MouseButtonState[i] = m_MouseButtonState[i] & (0xFF ^ BUTTONSTATEFLAG_JUST_PRESSED);
+    for(int i = 0; i < SDL_NUM_SCANCODES; i++)
+        m_KeyState[i] = m_KeyState[i] & ~BUTTONSTATEFLAG_JUST_PRESSED;
+
+    for(int i = 0; i < 5; i++)
+        m_MouseButtonState[i] = m_MouseButtonState[i] & ~BUTTONSTATEFLAG_JUST_PRESSED;
 }
 
-void Input::HandleKeyboard(SDL_Scancode key, bool state)
+void Input::HandleKeyboard(int key, bool state)
 {
     if(key < 0 || key >= SDL_NUM_SCANCODES) return;
-    m_KeyState[key] = (BUTTONSTATEFLAG_PRESSED | BUTTONSTATEFLAG_JUST_PRESSED);
+    m_KeyState[key] = state * (BUTTONSTATEFLAG_PRESSED | BUTTONSTATEFLAG_JUST_PRESSED);
 }
 
 void Input::HandleMouseMovement(int x, int y, int relx, int rely)
@@ -51,14 +51,14 @@ void Input::HandleMouseWheel(int direction)
 
 bool Input::IsKeyJustPressed(int key)
 {
-    key = key & ~SDLK_SCANCODE_MASK;
+    key = SDL_GetScancodeFromKey(key);
     if(key < 0 || key >= SDL_NUM_SCANCODES) return false;
     return m_KeyState[key] & BUTTONSTATEFLAG_JUST_PRESSED;
 }
 
 bool Input::IsKeyPressed(int key)
 {
-    key = key & ~SDLK_SCANCODE_MASK;
+    key = SDL_GetScancodeFromKey(key);
     if(key < 0 || key >= SDL_NUM_SCANCODES) return false;
     return m_KeyState[key] & BUTTONSTATEFLAG_PRESSED;
 }

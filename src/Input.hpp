@@ -25,7 +25,7 @@ public:
     void Init();
     void Frame();
 
-    void HandleKeyboard(SDL_Scancode key, bool state);
+    void HandleKeyboard(int key, bool state);
     void HandleMouseMovement(int x, int y, int relx, int rely);
     void HandleMouseButton(int button, bool state);
     void HandleMouseWheel(int direction);
