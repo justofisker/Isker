@@ -110,6 +110,13 @@ void Shader::SetUniform4f(const std::string &uniform, const glm::vec4 &vec)
     glUniform4f(loc, vec.x, vec.y, vec.z, vec.w);
 }
 
+void Shader::SetUniform1i(const std::string &uniform, int v)
+{
+    int loc = GetUniformLoc(uniform);
+    if(loc == -1) return;
+    glUniform1i(loc, v);
+}
+
 void Shader::SetUniformMat4(const std::string &uniform, const glm::mat4 &mat)
 {
     int loc = GetUniformLoc(uniform);

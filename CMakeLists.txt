@@ -13,6 +13,7 @@ set (source
     "${PROJECT_SOURCE_DIR}/src/Mesh.cpp"
     "${PROJECT_SOURCE_DIR}/src/Shader.cpp"
     "${PROJECT_SOURCE_DIR}/thirdparty/glad/src/glad.c"
+    "${PROJECT_SOURCE_DIR}/src/stb_image.c"
     )
 
 if (UNIX)
@@ -47,4 +48,5 @@ target_include_directories(${game_name} PUBLIC
     "${PROJECT_SOURCE_DIR}/thirdparty/SDL2/x86_64-w64-mingw32/include"
     "${PROJECT_SOURCE_DIR}/thirdparty/glad/include"
     "${PROJECT_SOURCE_DIR}/thirdparty/glm"
+    "${PROJECT_SOURCE_DIR}/thirdparty/stb"
     )

@@ -10,18 +10,27 @@
 #include "Game.hpp"
 #include "Mesh.hpp"
 #include "Shader.hpp"
+#include "Sprite.hpp"
 
 // Placeholder until I implement batching
 Mesh *Quad;
 Shader *ColorShader;
+Shader *SpriteShader;
+Sprite *sprite;
 
 static void CreateQuad()
 {
-    float vertices[4 * 2] = {
-        -0.5f, -0.5f,
-         0.5f, -0.5f,
-         0.5f,  0.5f,
-        -0.5f,  0.5f,
+    struct Vertex
+    {
+        float x, y;
+        float uv[2];
+    };
+
+    float vertices[4 * (2 + 2)] = {
+        -0.5f, -0.5f, 0.0f, 0.0f,
+         0.5f, -0.5f, 1.0f, 0.0f,
+         0.5f,  0.5f, 1.0f, 1.0f,
+        -0.5f,  0.5f, 0.0f, 1.0f,
     };
 
     unsigned char indices[3 * 2] = {
@@ -38,7 +47,9 @@ static void CreateQuad()
     glBindBuffer(GL_ARRAY_BUFFER, vb);
     glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
     glEnableVertexAttribArray(0);
-    glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, sizeof(float) * 2, (void*)0);
+    glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, x));
+    glEnableVertexAttribArray(1);
+    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, uv));
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ib);
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
     glBindVertexArray(0);
@@ -58,6 +69,8 @@ void Renderer::Init(SDL_Window *pWindow)
 
     CreateQuad();
     ColorShader = new Shader("asset/shader/color_vert.glsl", "asset/shader/color_frag.glsl");
+    SpriteShader = new Shader("asset/shader/sprite_vert.glsl", "asset/shader/sprite_frag.glsl");
+    sprite = new Sprite("asset/image/god.png");
 }
 
 void Renderer::RenderBegin()
@@ -86,8 +99,11 @@ void Renderer::RenderSprite(const Sprite &sprite)
 
 void Renderer::RenderQuad(const glm::vec2 &translation, const glm::vec4 &color)
 {
-    ColorShader->Bind();
-    ColorShader->SetUniform4f("u_Color", glm::vec4(1.0f, 0.0f, 1.0f, 1.0f));
+    //ColorShader->Bind();
+    //ColorShader->SetUniform4f("u_Color", glm::vec4(1.0f, 0.0f, 1.0f, 1.0f));
+    SpriteShader->Bind();
+    SpriteShader->SetUniform1i("u_Texture", 0);
+    sprite->Bind(0);
     glBindVertexArray(Quad->m_VAO);
     glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_BYTE, nullptr);
     glBindVertexArray(0);
