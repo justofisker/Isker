@@ -5,6 +5,7 @@
 #include <glm/glm.hpp>
 #include <glm/ext/matrix_transform.hpp>
 #include <glm/ext/matrix_clip_space.hpp>
+#include <glm/gtx/rotate_vector.hpp>
 
 #include "Input.hpp"
 #include "Game.hpp"
@@ -71,20 +72,45 @@ void Renderer::RenderSprite(std::shared_ptr<Sprite> sprite, const glm::vec2 &tra
         SDL_Log("OUT OF TEXTURE SLOTS!\n");
         return;
     }
-    m_Vertices[0 + m_QuadCount * 4] = Vertex{ glm::vec2(-sprite->GetWidth() * scale.x / 2 + translation.x, -sprite->GetHeight() * scale.y / 2 + translation.y), glm::vec2(0.0f, 0.0f), glm::vec4(1.0f), (float)slot };
-    m_Vertices[1 + m_QuadCount * 4] = Vertex{ glm::vec2( sprite->GetWidth() * scale.x / 2 + translation.x, -sprite->GetHeight() * scale.y / 2 + translation.y), glm::vec2(1.0f, 0.0f), glm::vec4(1.0f), (float)slot };
-    m_Vertices[2 + m_QuadCount * 4] = Vertex{ glm::vec2( sprite->GetWidth() * scale.x / 2 + translation.x,  sprite->GetHeight() * scale.y / 2 + translation.y), glm::vec2(1.0f, 1.0f), glm::vec4(1.0f), (float)slot };
-    m_Vertices[3 + m_QuadCount * 4] = Vertex{ glm::vec2(-sprite->GetWidth() * scale.x / 2 + translation.x,  sprite->GetHeight() * scale.y / 2 + translation.y), glm::vec2(0.0f, 1.0f), glm::vec4(1.0f), (float)slot };
+
+    glm::vec2 bottom_left  = glm::vec2(-sprite->GetWidth(), -sprite->GetHeight());
+    glm::vec2 bottom_right = glm::vec2( sprite->GetWidth(), -sprite->GetHeight());
+    glm::vec2 top_right    = glm::vec2( sprite->GetWidth(),  sprite->GetHeight());
+    glm::vec2 top_left     = glm::vec2(-sprite->GetWidth(),  sprite->GetHeight());
+
+    if(rotation != 0.0f) {
+        bottom_left  = glm::rotate(bottom_left , rotation);
+        bottom_right = glm::rotate(bottom_right, rotation);
+        top_right    = glm::rotate(top_right   , rotation);
+        top_left     = glm::rotate(top_left    , rotation);
+    }
+
+    m_Vertices[0 + m_QuadCount * 4] = Vertex{ glm::vec2(bottom_left .x * scale.x / 2 + translation.x, bottom_left .y * scale.y / 2 + translation.y), glm::vec2(0.0f, 0.0f), glm::vec4(1.0f), (float)slot };
+    m_Vertices[1 + m_QuadCount * 4] = Vertex{ glm::vec2(bottom_right.x * scale.x / 2 + translation.x, bottom_right.y * scale.y / 2 + translation.y), glm::vec2(1.0f, 0.0f), glm::vec4(1.0f), (float)slot };
+    m_Vertices[2 + m_QuadCount * 4] = Vertex{ glm::vec2(top_right   .x * scale.x / 2 + translation.x, top_right   .y * scale.y / 2 + translation.y), glm::vec2(1.0f, 1.0f), glm::vec4(1.0f), (float)slot };
+    m_Vertices[3 + m_QuadCount * 4] = Vertex{ glm::vec2(top_left    .x * scale.x / 2 + translation.x, top_left    .y * scale.y / 2 + translation.y), glm::vec2(0.0f, 1.0f), glm::vec4(1.0f), (float)slot };
     m_QuadCount++;
 }
 
 
-void Renderer::RenderQuad(const glm::vec2 &translation, const glm::vec2 &size, const glm::vec4 &color)
+void Renderer::RenderQuad(const glm::vec2 &translation, const glm::vec2 &size, float rotation, const glm::vec4 &color)
 {
-    m_Vertices[0 + m_QuadCount * 4] = Vertex{ glm::vec2(-100.0f + translation.x, -100.0f + translation.y), glm::vec2(0.0f, 0.0f), color, -1 };
-    m_Vertices[1 + m_QuadCount * 4] = Vertex{ glm::vec2( 100.0f + translation.x, -100.0f + translation.y), glm::vec2(1.0f, 0.0f), color, -1 };
-    m_Vertices[2 + m_QuadCount * 4] = Vertex{ glm::vec2( 100.0f + translation.x,  100.0f + translation.y), glm::vec2(1.0f, 1.0f), color, -1 };
-    m_Vertices[3 + m_QuadCount * 4] = Vertex{ glm::vec2(-100.0f + translation.x,  100.0f + translation.y), glm::vec2(0.0f, 1.0f), color, -1 };
+    glm::vec2 bottom_left  = glm::vec2(-size.x / 2.0f, -size.x / 2.0f);
+    glm::vec2 bottom_right = glm::vec2( size.x / 2.0f, -size.x / 2.0f);
+    glm::vec2 top_right    = glm::vec2( size.x / 2.0f,  size.x / 2.0f);
+    glm::vec2 top_left     = glm::vec2(-size.x / 2.0f,  size.x / 2.0f);
+
+    if(rotation != 0.0f) {
+        bottom_left  = glm::rotate(bottom_left , rotation);
+        bottom_right = glm::rotate(bottom_right, rotation);
+        top_right    = glm::rotate(top_right   , rotation);
+        top_left     = glm::rotate(top_left    , rotation);
+    }
+
+    m_Vertices[0 + m_QuadCount * 4] = Vertex{ glm::vec2(bottom_left .x + translation.x, bottom_left .y + translation.y), glm::vec2(0.0f, 0.0f), color, -1.0f };
+    m_Vertices[1 + m_QuadCount * 4] = Vertex{ glm::vec2(bottom_right.x + translation.x, bottom_right.y + translation.y), glm::vec2(1.0f, 0.0f), color, -1.0f };
+    m_Vertices[2 + m_QuadCount * 4] = Vertex{ glm::vec2(top_right   .x + translation.x, top_right   .y + translation.y), glm::vec2(1.0f, 1.0f), color, -1.0f };
+    m_Vertices[3 + m_QuadCount * 4] = Vertex{ glm::vec2(top_left    .x + translation.x, top_left    .y + translation.y), glm::vec2(0.0f, 1.0f), color, -1.0f };
     m_QuadCount++;
 }
 

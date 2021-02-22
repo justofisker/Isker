@@ -6,6 +6,8 @@
 #include "Sprite.hpp"
 #include <math.h>
 
+#include <glm/gtc/constants.hpp>
+
 void Game::Init(SDL_Window *pWindow)
 {
     m_pWindow = pWindow;
@@ -20,14 +22,20 @@ void Game::Frame(float delta)
 
     Renderer::Get().RenderBegin();
 
-    Renderer::Get().RenderQuad(glm::vec2(width / 2 + 250, height / 2), glm::vec2(200.0f, 200.0f), glm::vec4(0.4f, 0.7f, 0.3f, 1.0f));
-
-    Renderer::Get().RenderSprite(MarioSprite, glm::vec2(width / 2 - 500, height / 2 - 100), glm::vec2(0.4f));
-
     static float theta = 0.0f;
     theta += delta;
 
-    Renderer::Get().RenderSprite(GodSprite, glm::vec2(width / 2 + sinf(theta) * 150, height / 2), glm::vec2(0.4f));
+    for(int x = 0; x < 30; x++)
+    {
+        for(int y = 0; y < 30; y++)
+        {
+            Renderer::Get().RenderSprite(MarioSprite, glm::vec2(width * x / 30.0f, height * y / 30.0f), glm::vec2(0.4f));
+        }
+    }
+
+    Renderer::Get().RenderQuad(glm::vec2(width / 2 + 250, height / 2), glm::vec2(200.0f, 200.0f), glm::pi<float>() / 4.0f, glm::vec4(0.4f, 0.7f, 0.3f, 1.0f));
+
+    Renderer::Get().RenderSprite(GodSprite, glm::vec2(width / 2 + sinf(theta) * 150, height / 2), glm::vec2(0.4f), theta);
 
     Renderer::Get().RenderEnd();
 }
