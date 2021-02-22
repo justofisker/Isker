@@ -31,7 +31,7 @@ Sprite::Sprite(const std::string &file_path)
 }
 
 
-void Sprite::Bind(unsigned char slot)
+void Sprite::Bind(unsigned char slot) const
 {
     glActiveTexture(GL_TEXTURE0 + slot);
     glBindTexture(GL_TEXTURE_2D, m_TextureID);

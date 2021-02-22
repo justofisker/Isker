@@ -9,5 +9,5 @@ private:
 public:
     Sprite() = delete;
     Sprite(const std::string &file_path);
-    void Bind(unsigned char slot);
+    void Bind(unsigned char slot) const;
 };

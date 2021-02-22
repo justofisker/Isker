@@ -16,7 +16,6 @@
 Mesh *Quad;
 Shader *ColorShader;
 Shader *SpriteShader;
-Sprite *sprite;
 
 static void CreateQuad()
 {
@@ -70,7 +69,6 @@ void Renderer::Init(SDL_Window *pWindow)
     CreateQuad();
     ColorShader = new Shader("asset/shader/color_vert.glsl", "asset/shader/color_frag.glsl");
     SpriteShader = new Shader("asset/shader/sprite_vert.glsl", "asset/shader/sprite_frag.glsl");
-    sprite = new Sprite("asset/image/god.png");
 }
 
 void Renderer::RenderBegin()
@@ -85,25 +83,43 @@ void Renderer::RenderBegin()
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 }
 
-void Renderer::RenderSprite(const Sprite &sprite)
+void Renderer::RenderSprite(const Sprite &sprite, const glm::vec2 &translation)
 {
     int width, height;
     SDL_GetWindowSize(m_pWindow, &width, &height);
-    glm::mat4 projection = glm::ortho(0, width, 0, height);
+    glm::mat4 projection = glm::ortho(0.0f, (float)width, 0.0f, (float)height, -1.0f, 1.0f);
     glm::mat4 view = glm::mat4(1.0f);
     glm::mat4 model = glm::mat4(1.0f);
+    model = glm::translate(model, glm::vec3(translation, 0.0f));
+    model = glm::scale(model, glm::vec3(200.0f));
 
     glm::mat4 mvp = projection * view * model;
+
+    SpriteShader->Bind();
+    SpriteShader->SetUniform1i("u_Texture", 0);
+    SpriteShader->SetUniformMat4("u_MVP", mvp);
+    sprite.Bind(0);
+    glBindVertexArray(Quad->m_VAO);
+    glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_BYTE, nullptr);
+    glBindVertexArray(0);
 }
 
 
 void Renderer::RenderQuad(const glm::vec2 &translation, const glm::vec4 &color)
 {
-    //ColorShader->Bind();
-    //ColorShader->SetUniform4f("u_Color", glm::vec4(1.0f, 0.0f, 1.0f, 1.0f));
-    SpriteShader->Bind();
-    SpriteShader->SetUniform1i("u_Texture", 0);
-    sprite->Bind(0);
+    int width, height;
+    SDL_GetWindowSize(m_pWindow, &width, &height);
+    glm::mat4 projection = glm::ortho(0.0f, (float)width, 0.0f, (float)height, -1.0f, 1.0f);
+    glm::mat4 view = glm::mat4(1.0f);
+    glm::mat4 model = glm::mat4(1.0f);
+    model = glm::translate(model, glm::vec3(translation, 0.0f));
+    model = glm::scale(model, glm::vec3(200.0f));
+
+    glm::mat4 mvp = projection * view * model;
+
+    ColorShader->Bind();
+    ColorShader->SetUniform4f("u_Color", color);
+    ColorShader->SetUniformMat4("u_MVP", mvp);
     glBindVertexArray(Quad->m_VAO);
     glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_BYTE, nullptr);
     glBindVertexArray(0);

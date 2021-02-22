@@ -24,7 +24,7 @@ public:
     void Init(SDL_Window *pWindow);
 
     void RenderBegin();
-    void RenderSprite(const Sprite &sprite);
+    void RenderSprite(const Sprite &sprite, const glm::vec2 &translation);
     void RenderQuad(const glm::vec2 &translation, const glm::vec4 &color);
     void RenderEnd();
 };
