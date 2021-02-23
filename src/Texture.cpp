@@ -1,9 +1,9 @@
-#include "Sprite.hpp"
+#include "Texture.hpp"
 
 #include <stb/stb_image.h>
 #include <glad/glad.h>
 
-Sprite::Sprite(const std::string &file_path)
+Texture::Texture(const std::string &file_path)
 {
     stbi_set_flip_vertically_on_load(1);
     int w, h, c;
@@ -35,7 +35,7 @@ Sprite::Sprite(const std::string &file_path)
 }
 
 
-void Sprite::Bind(unsigned char slot) const
+void Texture::Bind(unsigned char slot) const
 {
     glActiveTexture(GL_TEXTURE0 + slot);
     glBindTexture(GL_TEXTURE_2D, m_TextureID);

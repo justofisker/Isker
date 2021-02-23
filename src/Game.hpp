@@ -1,10 +1,9 @@
 #pragma once
 
-#include "Singleton.hpp"
-
 #include <SDL2/SDL.h>
+#include <glm/vec2.hpp>
 
-#include <utility>
+#include "Singleton.hpp"
 
 class Game {
     SINGLETON(Game);
@@ -13,5 +12,5 @@ private:
 public:
     void Init(SDL_Window *pWindow);
     void Frame(float delta);
-    std::pair<int, int> GetGameWindowSize();
+    glm::vec2 GetGameWindowSize();
 };

@@ -2,13 +2,13 @@
 
 #include <string>
 
-class Sprite {
+class Texture {
 private:
     unsigned int m_TextureID;
     int width, height, channels;
 public:
-    Sprite() = delete;
-    Sprite(const std::string &file_path);
+    Texture() = delete;
+    Texture(const std::string &file_path);
     void Bind(unsigned char slot) const;
 
     inline int GetWidth() const { return width; }

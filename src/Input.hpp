@@ -1,10 +1,9 @@
 #pragma once
 
-#include "Singleton.hpp"
-
+#include <glm/vec2.hpp>
 #include <SDL2/SDL.h>
 
-#include <utility>
+#include "Singleton.hpp"
 
 class Input
 {
@@ -34,8 +33,8 @@ public:
     bool IsKeyPressed(int key);
     bool IsMouseButtonJustPressed(int button);
     bool IsMouseButtonPressed(int button);
-    std::pair<int, int> GetMousePosition();
-    std::pair<int, int> GetMouseMovement();
+    glm::vec2 GetMousePosition();
+    glm::vec2 GetMouseMovement();
     int GetMouseWheelDirection();
     
 };

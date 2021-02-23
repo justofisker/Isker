@@ -1,9 +1,10 @@
 #include "Shader.hpp"
-#include <glad/glad.h>
-#include <SDL2/SDL_log.h>
 
 #include <fstream>
 #include <vector>
+
+#include <glad/glad.h>
+#include <SDL2/SDL_log.h>
 
 static const char* GetFileContents(const char *path, int *length)
 {
@@ -75,6 +76,11 @@ Shader::Shader(const std::string &vertex_path, const std::string &fragment_path)
     glDeleteShader(fragment_shader);
     
     m_ProgramID = program;
+}
+
+Shader::~Shader()
+{
+    glDeleteProgram(m_ProgramID);
 }
 
 void Shader::Bind()

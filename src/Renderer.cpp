@@ -1,7 +1,6 @@
 #include "Renderer.hpp"
 
 #include <glad/glad.h>
-
 #include <glm/glm.hpp>
 #include <glm/ext/matrix_transform.hpp>
 #include <glm/ext/matrix_clip_space.hpp>
@@ -11,7 +10,7 @@
 #include "Game.hpp"
 #include "Mesh.hpp"
 #include "Shader.hpp"
-#include "Sprite.hpp"
+#include "Texture.hpp"
 
 void Renderer::Init(SDL_Window *pWindow)
 {
@@ -38,23 +37,32 @@ void Renderer::Init(SDL_Window *pWindow)
     m_2DShader->Bind();
     int textures[32] = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31 };
     m_2DShader->SetUniform1iv("u_Textures", textures, 32);
+    m_iDrawCalls = 0;
+
+    int width, height;
+    SDL_GetWindowSize(m_pWindow, &width, &height);
+    glViewport(0, 0, width, height);
+    m_RenderWindowSize = glm::vec2(width, height);
+
+    glEnable(GL_CULL_FACE);
+    glCullFace(GL_BACK);
+    glFrontFace(GL_CCW);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    glEnable(GL_BLEND);
 }
 
 void Renderer::RenderBegin()
 {
-    int width, height;
-    SDL_GetWindowSize(m_pWindow, &width, &height);
-    glViewport(0, 0, width, height);
     glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 }
 
-void Renderer::RenderSprite(std::shared_ptr<Sprite> sprite, const glm::vec2 &translation, const glm::vec2 &scale, float rotation)
+void Renderer::RenderTexturedQuad(std::shared_ptr<Texture> sprite, const glm::vec2 &translation, const glm::vec2 &scale, float rotation)
 {
     int slot = -1;
     for(int i = 0; i < 32; i++)
     {
-        std::shared_ptr<Sprite> curSlot = m_TextureSlots[i].lock();
+        std::shared_ptr<Texture> curSlot = m_TextureSlots[i].lock();
         if(!curSlot)
         {
             m_TextureSlots[i] = sprite;
@@ -90,6 +98,9 @@ void Renderer::RenderSprite(std::shared_ptr<Sprite> sprite, const glm::vec2 &tra
     m_Vertices[2 + m_QuadCount * 4] = Vertex{ glm::vec2(top_right   .x * scale.x / 2 + translation.x, top_right   .y * scale.y / 2 + translation.y), glm::vec2(1.0f, 1.0f), glm::vec4(1.0f), (float)slot };
     m_Vertices[3 + m_QuadCount * 4] = Vertex{ glm::vec2(top_left    .x * scale.x / 2 + translation.x, top_left    .y * scale.y / 2 + translation.y), glm::vec2(0.0f, 1.0f), glm::vec4(1.0f), (float)slot };
     m_QuadCount++;
+
+    if(m_QuadCount == MAX_QUADS)
+        DrawQuadBuffer();
 }
 
 
@@ -107,48 +118,24 @@ void Renderer::RenderQuad(const glm::vec2 &translation, const glm::vec2 &size, f
         top_left     = glm::rotate(top_left    , rotation);
     }
 
-    m_Vertices[0 + m_QuadCount * 4] = Vertex{ glm::vec2(bottom_left .x + translation.x, bottom_left .y + translation.y), glm::vec2(0.0f, 0.0f), color, -1.0f };
-    m_Vertices[1 + m_QuadCount * 4] = Vertex{ glm::vec2(bottom_right.x + translation.x, bottom_right.y + translation.y), glm::vec2(1.0f, 0.0f), color, -1.0f };
-    m_Vertices[2 + m_QuadCount * 4] = Vertex{ glm::vec2(top_right   .x + translation.x, top_right   .y + translation.y), glm::vec2(1.0f, 1.0f), color, -1.0f };
-    m_Vertices[3 + m_QuadCount * 4] = Vertex{ glm::vec2(top_left    .x + translation.x, top_left    .y + translation.y), glm::vec2(0.0f, 1.0f), color, -1.0f };
+    m_Vertices[0 + m_QuadCount * 4] = Vertex{ glm::vec2(bottom_left .x + translation.x, bottom_left .y + m_RenderWindowSize.y - translation.y), glm::vec2(0.0f, 0.0f), color, -1.0f };
+    m_Vertices[1 + m_QuadCount * 4] = Vertex{ glm::vec2(bottom_right.x + translation.x, bottom_right.y + m_RenderWindowSize.y - translation.y), glm::vec2(1.0f, 0.0f), color, -1.0f };
+    m_Vertices[2 + m_QuadCount * 4] = Vertex{ glm::vec2(top_right   .x + translation.x, top_right   .y + m_RenderWindowSize.y - translation.y), glm::vec2(1.0f, 1.0f), color, -1.0f };
+    m_Vertices[3 + m_QuadCount * 4] = Vertex{ glm::vec2(top_left    .x + translation.x, top_left    .y + m_RenderWindowSize.y - translation.y), glm::vec2(0.0f, 1.0f), color, -1.0f };
     m_QuadCount++;
+
+    if(m_QuadCount == MAX_QUADS)
+        DrawQuadBuffer();
 }
 
 void Renderer::RenderEnd()
 {
-    if(m_QuadCount)
-    {
-        glEnable(GL_CULL_FACE);
-        glCullFace(GL_BACK);
-        glFrontFace(GL_CCW);
-
-        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-        glEnable(GL_BLEND);
-
-        int width, height;
-        SDL_GetWindowSize(m_pWindow, &width, &height);
-        glm::mat4 projection = glm::ortho(0.0f, (float)width, 0.0f, (float)height, -1.0f, 1.0f);
-
-        m_2DShader->Bind();
-        m_2DShader->SetUniformMat4("u_MVP", projection);
-
-        for(int i = 0; i < 32; i++)
-        {
-            if(std::shared_ptr<Sprite> slot = m_TextureSlots[i].lock())
-            {
-                slot->Bind(i);
-                m_TextureSlots[i] = std::weak_ptr<Sprite>();
-            } else break;
-        }
-
-        glBindVertexArray(m_QuadBufferVetexArrayObject);
-        glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(Vertex) * 4 * m_QuadCount, m_Vertices);
-        glDrawElements(GL_TRIANGLES, m_QuadCount * 6, GL_UNSIGNED_INT, nullptr);
-        glBindVertexArray(0);
-        
-        m_QuadCount = 0;
-    }
+    DrawQuadBuffer();
+    //SDL_Log("Draw calls: %d\n", m_iDrawCalls);
+    m_iDrawCalls = 0;
+    
     SDL_GL_SwapWindow(m_pWindow);
+
 }
 
 void Renderer::CreateQuadBuffer(int max_count)
@@ -170,7 +157,7 @@ void Renderer::CreateQuadBuffer(int max_count)
     glEnableVertexAttribArray(3);
     glVertexAttribPointer(3, 1, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, texture));
 
-    unsigned int *indices = (unsigned int*)malloc(sizeof(unsigned int) * 6 * max_count);
+    unsigned int *indices = new unsigned int[6 * max_count];
 
     for(int i = 0; i < max_count; i++)
     {
@@ -185,11 +172,47 @@ void Renderer::CreateQuadBuffer(int max_count)
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ib);
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(unsigned int) * 6 * max_count, indices, GL_STATIC_DRAW);
 
-    free((void*)indices);
+    delete[] indices;
 
     glBindVertexArray(0);
     
     m_QuadBufferVetexArrayObject = vao;
     m_QuadBufferVertexBuffer = vb;
     m_QuadBufferIndexBuffer = ib;
+}
+
+void Renderer::DrawQuadBuffer()
+{
+    if(!m_QuadCount) return;
+
+    int width, height;
+    SDL_GetWindowSize(m_pWindow, &width, &height);
+
+    glm::mat4 projection = glm::ortho(0.0f, (float)width, 0.0f, (float)height, -1.0f, 1.0f);
+
+    m_2DShader->Bind();
+    m_2DShader->SetUniformMat4("u_MVP", projection);
+
+    for(int i = 0; i < 32; i++)
+    {
+        if(std::shared_ptr<Texture> slot = m_TextureSlots[i].lock())
+        {
+            slot->Bind(i);
+            m_TextureSlots[i] = std::weak_ptr<Texture>();
+        } else break;
+    }
+
+    glBindVertexArray(m_QuadBufferVetexArrayObject);
+    glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(Vertex) * 4 * m_QuadCount, m_Vertices.data());
+    glDrawElements(GL_TRIANGLES, m_QuadCount * 6, GL_UNSIGNED_INT, nullptr);
+    glBindVertexArray(0);
+    
+    m_QuadCount = 0;
+    m_iDrawCalls++;
+}
+
+void Renderer::OnResize(int width, int height)
+{
+    glViewport(0, 0, width, height);
+    m_RenderWindowSize = glm::vec2(width, height);
 }

@@ -77,14 +77,14 @@ bool Input::IsMouseButtonPressed(int button)
     return m_MouseButtonState[button] & BUTTONSTATEFLAG_PRESSED;
 }
 
-std::pair<int, int> Input::GetMousePosition()
+glm::vec2 Input::GetMousePosition()
 {
-    return std::make_pair(m_MousePosition[0], m_MousePosition[1]);
+    return glm::vec2(m_MousePosition[0], m_MousePosition[1]);
 }
 
-std::pair<int, int> Input::GetMouseMovement()
+glm::vec2 Input::GetMouseMovement()
 {
-    return std::make_pair(m_MouseMotion[0], m_MouseMotion[1]);
+    return glm::vec2(m_MouseMotion[0], m_MouseMotion[1]);
 }
 
 int Input::GetMouseWheelDirection()

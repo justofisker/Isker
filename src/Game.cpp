@@ -1,12 +1,10 @@
 #include "Game.hpp"
 
 #include "Renderer.hpp"
+#include <glm/gtc/constants.hpp>
 
 #include "Input.hpp"
-#include "Sprite.hpp"
-#include <math.h>
-
-#include <glm/gtc/constants.hpp>
+#include "Texture.hpp"
 
 void Game::Init(SDL_Window *pWindow)
 {
@@ -15,34 +13,39 @@ void Game::Init(SDL_Window *pWindow)
 
 void Game::Frame(float delta)
 {
-    static std::shared_ptr<Sprite> GodSprite =   std::make_shared<Sprite>("asset/image/340.png");
-    static std::shared_ptr<Sprite> MarioSprite = std::make_shared<Sprite>("asset/image/gansta_mario.jpg");
+    static std::shared_ptr<Texture> GodSprite =   std::make_shared<Texture>("asset/image/340.png");
+    static std::shared_ptr<Texture> MarioSprite = std::make_shared<Texture>("asset/image/gansta_mario.jpg");
 
-    auto [width, height] = GetGameWindowSize();
+    glm::vec2 WindowSize = GetGameWindowSize();
 
     Renderer::Get().RenderBegin();
 
     static float theta = 0.0f;
-    theta += delta;
+    theta = fmodf(theta + delta, glm::pi<float>() * 2.0f);
 
-    for(int x = 0; x < 30; x++)
     {
-        for(int y = 0; y < 30; y++)
+        const int size = 5;
+        for(int x = 0; x < size; x++)
         {
-            Renderer::Get().RenderSprite(MarioSprite, glm::vec2(width * x / 30.0f, height * y / 30.0f), glm::vec2(0.4f));
+            for(int y = 0; y < size; y++)
+            {
+                Renderer::Get().RenderTexturedQuad(MarioSprite, glm::vec2(WindowSize.x * (x + 0.5f) / (float)size, WindowSize.y * (y + 0.5f) / (float)size), glm::vec2(0.4f));
+            }
         }
     }
 
-    Renderer::Get().RenderQuad(glm::vec2(width / 2 + 250, height / 2), glm::vec2(200.0f, 200.0f), glm::pi<float>() / 4.0f, glm::vec4(0.4f, 0.7f, 0.3f, 1.0f));
+    Renderer::Get().RenderQuad(glm::vec2(WindowSize.x / 2 + 250, WindowSize.y / 2), glm::vec2(200.0f, 200.0f), glm::pi<float>() / 4.0f, glm::vec4(0.4f, 0.7f, 0.3f, 1.0f));
 
-    Renderer::Get().RenderSprite(GodSprite, glm::vec2(width / 2 + sinf(theta) * 150, height / 2), glm::vec2(0.4f), theta);
+    Renderer::Get().RenderTexturedQuad(GodSprite, glm::vec2(WindowSize.x / 2 + sinf(theta) * 150, WindowSize.y / 2), glm::vec2(0.4f), theta);
+
+    Renderer::Get().RenderQuad(Input::Get().GetMousePosition(), glm::vec2(10.0f), 0.0f);
 
     Renderer::Get().RenderEnd();
 }
 
-std::pair<int, int> Game::GetGameWindowSize()
+glm::vec2 Game::GetGameWindowSize()
 {
     int w, h;
     SDL_GetWindowSize(m_pWindow, &w, &h);
-    return std::make_pair(w, h);
+    return glm::vec2(w, h);
 }

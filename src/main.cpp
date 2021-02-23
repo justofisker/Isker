@@ -42,6 +42,12 @@ int main()
                 bRunning = false;
                 break;
             case SDL_WINDOWEVENT:
+                switch(event.window.event)
+                {
+                case SDL_WINDOWEVENT_RESIZED:
+                    Renderer::Get().OnResize(event.window.data1, event.window.data2);
+                    break;
+                }
                 break;
             case SDL_KEYDOWN:
             case SDL_KEYUP:
@@ -69,7 +75,7 @@ int main()
             delta = 0.1f;
 
         Game::Get().Frame(delta);
-        //Input::Get().Frame();
+        Input::Get().Frame();
     }
 
     SDL_DestroyWindow(pWindow);

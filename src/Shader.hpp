@@ -12,6 +12,7 @@ private:
     std::map<std::string, unsigned int> m_Uniforms;
 public:
     Shader(const std::string &path_vertex, const std::string &path_fragment);
+    ~Shader();
     void Bind();
     void SetUniform1f(const std::string &uniform, float v);
     void SetUniform2f(const std::string &uniform, const glm::vec2 &vec);

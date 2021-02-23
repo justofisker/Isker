@@ -9,7 +9,7 @@ set (source
     "${PROJECT_SOURCE_DIR}/src/Game.cpp"
     "${PROJECT_SOURCE_DIR}/src/Renderer.cpp"
     "${PROJECT_SOURCE_DIR}/src/Input.cpp"
-    "${PROJECT_SOURCE_DIR}/src/Sprite.cpp"
+    "${PROJECT_SOURCE_DIR}/src/Texture.cpp"
     "${PROJECT_SOURCE_DIR}/src/Mesh.cpp"
     "${PROJECT_SOURCE_DIR}/src/Shader.cpp"
     "${PROJECT_SOURCE_DIR}/thirdparty/glad/src/glad.c"
