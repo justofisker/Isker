@@ -13,6 +13,8 @@
 
 #define MAX_QUADS 1024
 
+struct Transform2D;
+
 class Renderer {
     SINGLETON(Renderer);
 private:
@@ -37,11 +39,21 @@ private:
 public:
     void Init(SDL_Window *pWindow);
     void RenderBegin();
-    void RenderTexturedQuad(std::shared_ptr<Texture> sprite, const glm::vec2 &translation, const glm::vec2 &scale = glm::vec2(1.0f), float rotation = 0.0f);
-    void RenderQuad(const glm::vec2 &translation, const glm::vec2 &size, float rotation = 0.0f, const glm::vec4 &color = glm::vec4(1.0f));
+    void RenderTexturedQuad(std::shared_ptr<Texture> sprite, const Transform2D &transform);
+    void RenderQuad(const Transform2D &transform, const glm::vec4 &color = glm::vec4(1.0f));
     void RenderEnd();
     void OnResize(int width, int height);
 private:
     void CreateQuadBuffer(int max_count);
     void DrawQuadBuffer();
+};
+
+struct Transform2D
+{
+    glm::vec2 translation;
+    glm::vec2 scale;
+    float rotation;
+
+    Transform2D(const glm::vec2 &_translation = glm::vec2(0.0f), const glm::vec2 &_scale = glm::vec2(1.0f), float _rotation = 0.0f)
+        : translation(_translation), scale(_scale), rotation(_rotation) {}
 };

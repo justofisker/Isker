@@ -43,6 +43,9 @@ add_custom_command(TARGET ${game_name} POST_BUILD
 
 add_subdirectory("${PROJECT_SOURCE_DIR}/thirdparty/freetype")
 target_link_libraries(${game_name} freetype)
+
+add_subdirectory("${PROJECT_SOURCE_DIR}/thirdparty/box2d")
+target_link_libraries(${game_name} box2d)
         
 
 target_include_directories(${game_name} PUBLIC
@@ -50,4 +53,5 @@ target_include_directories(${game_name} PUBLIC
     "${PROJECT_SOURCE_DIR}/thirdparty/glad/include"
     "${PROJECT_SOURCE_DIR}/thirdparty/glm"
     "${PROJECT_SOURCE_DIR}/thirdparty/stb"
+    "${PROJECT_SOURCE_DIR}/thirdparty/box2d/include"
     )
