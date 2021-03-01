@@ -36,7 +36,7 @@ void Renderer::Init(SDL_Window *pWindow)
     m_2DShader = std::make_unique<Shader>("asset/shader/color_vert.glsl", "asset/shader/color_frag.glsl");
     m_2DShader->Bind();
     int textures[32] = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31 };
-    m_2DShader->SetUniform1iv("u_Textures", textures, 32);
+    m_2DShader->SetUniform1iv("u_Textures", 32, textures);
     m_iDrawCalls = 0;
 
     int width, height;
@@ -191,7 +191,7 @@ void Renderer::DrawQuadBuffer()
     glm::mat4 projection = glm::ortho(0.0f, (float)width, 0.0f, (float)height, -1.0f, 1.0f);
 
     m_2DShader->Bind();
-    m_2DShader->SetUniformMat4("u_MVP", projection);
+    m_2DShader->SetUniformMatrix4("u_MVP", projection);
 
     for(int i = 0; i < 32; i++)
     {

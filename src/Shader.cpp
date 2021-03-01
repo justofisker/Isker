@@ -123,18 +123,263 @@ void Shader::SetUniform1i(const std::string &uniform, int v)
     glUniform1i(loc, v);
 }
 
-void Shader::SetUniform1iv(const std::string &uniform, int *v, int count)
+void Shader::SetUniform2i(const std::string &uniform, const glm::ivec2 &vec)
+{
+    int loc = GetUniformLoc(uniform);
+    if(loc == -1) return;
+    glUniform2i(loc, vec.x, vec.y);
+}
+
+void Shader::SetUniform3i(const std::string &uniform, const glm::ivec3 &vec)
+{
+    int loc = GetUniformLoc(uniform);
+    if(loc == -1) return;
+    glUniform3i(loc, vec.x, vec.y, vec.z);
+}
+
+void Shader::SetUniform4i(const std::string &uniform, const glm::ivec4 &vec)
+{
+    int loc = GetUniformLoc(uniform);
+    if(loc == -1) return;
+    glUniform4i(loc, vec.x, vec.y, vec.z, vec.w);
+}
+
+void Shader::SetUniform1fv(const std::string &uniform, int count, float *v)
+{
+    int loc = GetUniformLoc(uniform);
+    if(loc == -1) return;
+    glUniform1fv(loc, count, v);
+}
+
+void Shader::SetUniform2fv(const std::string &uniform, int count, glm::vec2 *vec)
+{
+    int loc = GetUniformLoc(uniform);
+    if(loc == -1) return;
+    glUniform2fv(loc, count, (float*)vec);
+}
+
+void Shader::SetUniform3fv(const std::string &uniform, int count, glm::vec3 *vec)
+{
+    int loc = GetUniformLoc(uniform);
+    if(loc == -1) return;
+    glUniform3fv(loc, count, (float*)vec);
+}
+
+void Shader::SetUniform4fv(const std::string &uniform, int count, glm::vec4 *vec)
+{
+    int loc = GetUniformLoc(uniform);
+    if(loc == -1) return;
+    glUniform4fv(loc, count, (float*)vec);
+}
+
+void Shader::SetUniform1iv(const std::string &uniform, int count, int *v)
 {
     int loc = GetUniformLoc(uniform);
     if(loc == -1) return;
     glUniform1iv(loc, count, v);
 }
 
-void Shader::SetUniformMat4(const std::string &uniform, const glm::mat4 &mat)
+void Shader::SetUniform2iv(const std::string &uniform, int count, glm::ivec2 *vec)
+{
+    int loc = GetUniformLoc(uniform);
+    if(loc == -1) return;
+    glUniform2iv(loc, count, (int*)vec);
+}
+
+void Shader::SetUniform3iv(const std::string &uniform, int count, glm::ivec3 *vec)
+{
+    int loc = GetUniformLoc(uniform);
+    if(loc == -1) return;
+    glUniform3iv(loc, count, (int*)vec);
+}
+
+void Shader::SetUniform4iv(const std::string &uniform, int count, glm::ivec4 *vec)
+{
+    int loc = GetUniformLoc(uniform);
+    if(loc == -1) return;
+    glUniform4iv(loc, count, (int*)vec);
+}
+
+void Shader::SetUniformMatrix2(const std::string &uniform, const glm::mat2 &mat)
+{
+    int loc = GetUniformLoc(uniform);
+    if(loc == -1) return;
+    glUniformMatrix2fv(loc, 1, GL_FALSE, &mat[0][0]);
+}
+
+void Shader::SetUniformMatrix3(const std::string &uniform, const glm::mat3 &mat)
+{
+    int loc = GetUniformLoc(uniform);
+    if(loc == -1) return;
+    glUniformMatrix3fv(loc, 1, GL_FALSE, &mat[0][0]);
+}
+
+void Shader::SetUniformMatrix4(const std::string &uniform, const glm::mat4 &mat)
 {
     int loc = GetUniformLoc(uniform);
     if(loc == -1) return;
     glUniformMatrix4fv(loc, 1, GL_FALSE, &mat[0][0]);
+}
+
+void Shader::SetUniformMatrix2v(const std::string &uniform, int count, glm::mat2 *mat)
+{
+    int loc = GetUniformLoc(uniform);
+    if(loc == -1) return;
+    glUniformMatrix2fv(loc, count, GL_FALSE, &(*mat)[0][0]);
+}
+
+void Shader::SetUniformMatrix3v(const std::string &uniform, int count, glm::mat3 *mat)
+{
+    int loc = GetUniformLoc(uniform);
+    if(loc == -1) return;
+    glUniformMatrix3fv(loc, count, GL_FALSE, &(*mat)[0][0]);
+}
+
+void Shader::SetUniformMatrix4v(const std::string &uniform, int count, glm::mat4 *mat)
+{
+    int loc = GetUniformLoc(uniform);
+    if(loc == -1) return;
+    glUniformMatrix4fv(loc, count, GL_FALSE, &(*mat)[0][0]);
+}
+
+void Shader::SetUniformMatrix2x3(const std::string &uniform, const glm::mat2x3 &mat)
+{
+    int loc = GetUniformLoc(uniform);
+    if(loc == -1) return;
+    glUniformMatrix2x3fv(loc, 1, GL_FALSE, &mat[0][0]);
+}
+
+void Shader::SetUniformMatrix3x2(const std::string &uniform, const glm::mat3x2 &mat)
+{
+    int loc = GetUniformLoc(uniform);
+    if(loc == -1) return;
+    glUniformMatrix3x2fv(loc, 1, GL_FALSE, &mat[0][0]);
+}
+
+void Shader::SetUniformMatrix2x4(const std::string &uniform, const glm::mat2x4 &mat)
+{
+    int loc = GetUniformLoc(uniform);
+    if(loc == -1) return;
+    glUniformMatrix2x4fv(loc, 1, GL_FALSE, &mat[0][0]);
+}
+
+void Shader::SetUniformMatrix4x2(const std::string &uniform, const glm::mat4x2 &mat)
+{
+    int loc = GetUniformLoc(uniform);
+    if(loc == -1) return;
+    glUniformMatrix4x2fv(loc, 1, GL_FALSE, &mat[0][0]);
+}
+
+void Shader::SetUniformMatrix3x4(const std::string &uniform, const glm::mat3x4 &mat)
+{
+    int loc = GetUniformLoc(uniform);
+    if(loc == -1) return;
+    glUniformMatrix3x4fv(loc, 1, GL_FALSE, &mat[0][0]);
+}
+
+void Shader::SetUniformMatrix4x3(const std::string &uniform, const glm::mat4x3 &mat)
+{
+    int loc = GetUniformLoc(uniform);
+    if(loc == -1) return;
+    glUniformMatrix4x3fv(loc, 1, GL_FALSE, &mat[0][0]);
+}
+
+void Shader::SetUniformMatrix2x3v(const std::string &uniform, int count, glm::mat2x3 *mat)
+{
+    int loc = GetUniformLoc(uniform);
+    if(loc == -1) return;
+    glUniformMatrix2x3fv(loc, count, GL_FALSE, &(*mat)[0][0]);
+}
+
+void Shader::SetUniformMatrix3x2v(const std::string &uniform, int count, glm::mat3x2 *mat)
+{
+    int loc = GetUniformLoc(uniform);
+    if(loc == -1) return;
+    glUniformMatrix3x2fv(loc, count, GL_FALSE, &(*mat)[0][0]);
+}
+
+void Shader::SetUniformMatrix2x4v(const std::string &uniform, int count, glm::mat2x4 *mat)
+{
+    int loc = GetUniformLoc(uniform);
+    if(loc == -1) return;
+    glUniformMatrix2x4fv(loc, count, GL_FALSE, &(*mat)[0][0]);
+}
+
+void Shader::SetUniformMatrix4x2v(const std::string &uniform, int count, glm::mat4x2 *mat)
+{
+    int loc = GetUniformLoc(uniform);
+    if(loc == -1) return;
+    glUniformMatrix4x2fv(loc, count, GL_FALSE, &(*mat)[0][0]);
+}
+
+void Shader::SetUniformMatrix3x4v(const std::string &uniform, int count, glm::mat3x4 *mat)
+{
+    int loc = GetUniformLoc(uniform);
+    if(loc == -1) return;
+    glUniformMatrix3x4fv(loc, count, GL_FALSE, &(*mat)[0][0]);
+}
+
+void Shader::SetUniformMatrix4x3v(const std::string &uniform, int count, glm::mat4x3 *mat)
+{
+    int loc = GetUniformLoc(uniform);
+    if(loc == -1) return;
+    glUniformMatrix4x3fv(loc, count, GL_FALSE, &(*mat)[0][0]);
+}
+
+void Shader::SetUniform1ui(const std::string &uniform, unsigned int v)
+{
+    int loc = GetUniformLoc(uniform);
+    if(loc == -1) return;
+    glUniform1ui(loc, v);
+}
+
+void Shader::SetUniform2ui(const std::string &uniform, const glm::uvec2 &vec)
+{
+    int loc = GetUniformLoc(uniform);
+    if(loc == -1) return;
+    glUniform2ui(loc, vec.x, vec.y);
+}
+
+void Shader::SetUniform3ui(const std::string &uniform, const glm::uvec3 &vec)
+{
+    int loc = GetUniformLoc(uniform);
+    if(loc == -1) return;
+    glUniform3ui(loc, vec.x, vec.y, vec.z);
+}
+
+void Shader::SetUniform4ui(const std::string &uniform, const glm::uvec4 &vec)
+{
+    int loc = GetUniformLoc(uniform);
+    if(loc == -1) return;
+    glUniform4ui(loc, vec.x, vec.y, vec.z, vec.w);
+}
+
+void Shader::SetUniform1uiv(const std::string &uniform, int count, unsigned int *v)
+{
+    int loc = GetUniformLoc(uniform);
+    if(loc == -1) return;
+    glUniform1uiv(loc, count, v);
+}
+
+void Shader::SetUniform2uiv(const std::string &uniform, int count, glm::uvec2 *vec)
+{
+    int loc = GetUniformLoc(uniform);
+    if(loc == -1) return;
+    glUniform2uiv(loc, count, (unsigned int*)vec);
+}
+
+void Shader::SetUniform3uiv(const std::string &uniform, int count, glm::uvec3 *vec)
+{
+    int loc = GetUniformLoc(uniform);
+    if(loc == -1) return;
+    glUniform3uiv(loc, count, (unsigned int*)vec);
+}
+
+void Shader::SetUniform4uiv(const std::string &uniform, int count, glm::uvec4 *vec)
+{
+    int loc = GetUniformLoc(uniform);
+    if(loc == -1) return;
+    glUniform4uiv(loc, count, (unsigned int*)vec);
 }
 
 int Shader::GetUniformLoc(const std::string &uniform)
