@@ -54,4 +54,5 @@ target_include_directories(${game_name} PUBLIC
     "${PROJECT_SOURCE_DIR}/thirdparty/glm"
     "${PROJECT_SOURCE_DIR}/thirdparty/stb"
     "${PROJECT_SOURCE_DIR}/thirdparty/box2d/include"
+    "${PROJECT_SOURCE_DIR}/thirdparty/entt/single_include"
     )

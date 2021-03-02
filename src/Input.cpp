@@ -4,19 +4,16 @@
 
 void Input::Init()
 {
-    m_MousePosition[0] = 0;
-    m_MousePosition[1] = 0;
-    m_MouseMotion[0] = 0;
-    m_MouseMotion[1] = 0;
+    m_MousePosition.fill(0);
+    m_MouseMotion.fill(0);
     m_MouseWheelDirection = 0;
-    memset(m_KeyState, 0, sizeof(m_KeyState));
-    memset(m_MouseButtonState, 0, sizeof(m_MouseButtonState));
+    m_KeyState.fill(0);
+    m_MouseButtonState.fill(0);
 }
 
 void Input::Frame()
 {
-    m_MouseMotion[0] = 0;
-    m_MouseMotion[1] = 0;
+    m_MouseMotion.fill(0);
     m_MouseWheelDirection = 0;
 
     for(int i = 0; i < SDL_NUM_SCANCODES; i++)

@@ -10,8 +10,8 @@
 b2World *world;
 b2Body *groundBody;
 b2Body *body;
-int32 velocityIterations = 6;
-int32 positionIterations = 2;
+int32 velocityIterations = 8;
+int32 positionIterations = 3;
 
 void Game::Init(SDL_Window *pWindow)
 {
@@ -64,13 +64,22 @@ void Game::Frame(float delta)
         }
     }
 
-    Renderer::Get().RenderQuad(Transform2D(glm::vec2(WindowSize.x / 2 + 250, WindowSize.y / 2), glm::vec2(200.0f, 200.0f), glm::pi<float>() / 4.0f), glm::vec4(0.4f, 0.7f, 0.3f, 1.0f));
+    Renderer::Get().RenderQuad(Transform2D(glm::vec2(WindowSize.x / 2 + 250, WindowSize.y / 2), glm::vec2(100.0f, 100.0f), glm::pi<float>() / 4.0f), glm::vec4(0.4f, 0.7f, 0.3f, 1.0f));
 
     Renderer::Get().RenderTexturedQuad(GodSprite, Transform2D(glm::vec2(WindowSize.x / 2 + sinf(theta) * 150, WindowSize.y / 2), glm::vec2(0.4f), theta));
 
     {
         if(Input::Get().IsKeyJustPressed(SDLK_SPACE))
             body->ApplyLinearImpulseToCenter(b2Vec2(0.0f, 30.0f), true);
+
+        float direction = 0.0f;
+
+        if(Input::Get().IsKeyPressed(SDLK_LEFT) || Input::Get().IsKeyPressed(SDLK_a))
+            direction -= 1.0f;
+        if(Input::Get().IsKeyPressed(SDLK_RIGHT) || Input::Get().IsKeyPressed(SDLK_d))
+            direction += 1.0f;  
+
+        body->ApplyForceToCenter(b2Vec2(direction * 50.0f, 0.0f), true); 
         
         float scale = 30.0f;
 
@@ -80,8 +89,8 @@ void Game::Frame(float delta)
         b2Vec2 groundPos = groundBody->GetPosition();
         float groundRotation = groundBody->GetAngle();
         
-        Renderer::Get().RenderQuad(Transform2D(glm::vec2(scale * bodyPos.x   + WindowSize.x / 2.0f, WindowSize.y - scale * bodyPos.y   - 100), glm::vec2(2.0f) * scale         , bodyRotation), glm::vec4(0.3f, 0.4f, 0.5f, 1.0f));
-        Renderer::Get().RenderQuad(Transform2D(glm::vec2(scale * groundPos.x + WindowSize.x / 2.0f, WindowSize.y - scale * groundPos.y - 100), glm::vec2(100.0f, 20.0f) * scale, groundRotation));
+        Renderer::Get().RenderQuad(Transform2D(glm::vec2(scale * bodyPos.x   + WindowSize.x / 2.0f, WindowSize.y - scale * bodyPos.y   - 100), glm::vec2(1.0f) * scale         , bodyRotation), glm::vec4(0.3f, 0.4f, 0.5f, 1.0f));
+        Renderer::Get().RenderQuad(Transform2D(glm::vec2(scale * groundPos.x + WindowSize.x / 2.0f, WindowSize.y - scale * groundPos.y - 100), glm::vec2(50.0f, 10.0f) * scale, groundRotation));
     }
 
     Renderer::Get().RenderQuad(Transform2D(Input::Get().GetMousePosition(), glm::vec2(10.0f)));

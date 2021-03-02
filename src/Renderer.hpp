@@ -5,6 +5,7 @@
 
 #include <glm/vec4.hpp>
 #include <glm/vec2.hpp>
+#include <glm/mat4x4.hpp>
 #include <SDL2/SDL.h>
 
 #include "Singleton.hpp"
@@ -13,7 +14,7 @@
 
 #define MAX_QUADS 1024
 
-struct Transform2D;
+class Transform2D;
 
 class Renderer {
     SINGLETON(Renderer);
@@ -39,8 +40,8 @@ private:
 public:
     void Init(SDL_Window *pWindow);
     void RenderBegin();
-    void RenderTexturedQuad(std::shared_ptr<Texture> sprite, const Transform2D &transform);
-    void RenderQuad(const Transform2D &transform, const glm::vec4 &color = glm::vec4(1.0f));
+    void RenderTexturedQuad(std::shared_ptr<Texture> sprite, const glm::mat4 &transform);
+    void RenderQuad(const glm::mat4 &transform, const glm::vec4 &color = glm::vec4(1.0f));
     void RenderEnd();
     void OnResize(int width, int height);
 private:
@@ -48,12 +49,32 @@ private:
     void DrawQuadBuffer();
 };
 
-struct Transform2D
+class Transform2D
 {
-    glm::vec2 translation;
-    glm::vec2 scale;
-    float rotation;
-
-    Transform2D(const glm::vec2 &_translation = glm::vec2(0.0f), const glm::vec2 &_scale = glm::vec2(1.0f), float _rotation = 0.0f)
-        : translation(_translation), scale(_scale), rotation(_rotation) {}
+private:
+    glm::vec2 m_Translation;
+    glm::vec2 m_Scale;
+    float m_Rotation;
+    glm::mat4 m_Matrix;
+    bool m_DoRecalculateMatrix;
+public:
+    Transform2D(const glm::vec2 &translation = glm::vec2(0.0f), const glm::vec2 &scale = glm::vec2(1.0f), float rotation = 0.0f);
+    inline const glm::vec2 &GetTranslation() { return m_Translation; }
+    inline const glm::vec2 &GetScale() { return m_Scale; }
+    inline float GetRotation() { return m_Rotation; }
+    const glm::mat4 &GetMatrix();
+    void SetTranslation(const glm::vec2 translation);
+    void SetScale(const glm::vec2 scale);
+    void SetRotation(float rotation);
+    operator const glm::mat4&()
+    {
+        if(m_DoRecalculateMatrix)
+        {
+            RecalculateMatrix();
+            m_DoRecalculateMatrix = false;
+        }
+        return m_Matrix;
+    }
+private:
+    void RecalculateMatrix();
 };

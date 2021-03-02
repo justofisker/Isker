@@ -1,5 +1,7 @@
 #pragma once
 
+#include <array>
+
 #include <glm/vec2.hpp>
 #include <SDL2/SDL.h>
 
@@ -15,11 +17,11 @@ private:
         BUTTONSTATEFLAG_JUST_PRESSED = 1 << 1,
     };
 private:
-    int m_MouseMotion[2];
-    int m_MousePosition[2];
+    std::array<int, 2> m_MouseMotion;
+    std::array<int, 2> m_MousePosition;
     int m_MouseWheelDirection;
-    ButtonState m_KeyState[SDL_NUM_SCANCODES];
-    ButtonState m_MouseButtonState[5];
+    std::array<ButtonState, SDL_NUM_SCANCODES> m_KeyState;
+    std::array<ButtonState, 5> m_MouseButtonState;
 public:
     void Init();
     void Frame();
