@@ -1,11 +1,12 @@
 #include "Game.hpp"
 
-#include "Renderer.hpp"
 #include <glm/gtc/constants.hpp>
 #include <box2d/box2d.h>
 
 #include "Input.hpp"
-#include "Texture.hpp"
+#include "Render/Renderer.hpp"
+#include "Render/Texture.hpp"
+#include "Component/Transform2D.hpp"
 
 b2World *world;
 b2Body *groundBody;
@@ -43,8 +44,11 @@ void Game::Init(SDL_Window *pWindow)
 
 void Game::Frame(float delta)
 {
-    static std::shared_ptr<Texture> GodSprite =   std::make_shared<Texture>("asset/image/340.png");
-    static std::shared_ptr<Texture> MarioSprite = std::make_shared<Texture>("asset/image/gansta_mario.jpg"); 
+    static std::shared_ptr<Texture> rotatingTexture    = std::make_shared<Texture>("asset/image/rotating.png");
+    static std::shared_ptr<Texture> backgroundTexture  = std::make_shared<Texture>("asset/image/background.jpg");
+    static std::shared_ptr<Texture> subTextureTest0    = std::make_shared<Texture>("asset/image/subtexturetest.png");
+    static std::shared_ptr<SubTexture> subTextureTest1 = std::make_shared<SubTexture>(subTextureTest0, 100, 100, 900, 900);
+    static std::shared_ptr<SubTexture> subTextureTest2 = std::make_shared<SubTexture>(subTextureTest1, 100, 100, 800, 800);
 
     glm::vec2 WindowSize = GetGameWindowSize();
 
@@ -59,14 +63,18 @@ void Game::Frame(float delta)
         {
             for(int y = 0; y < size; y++)
             {
-                Renderer::Get().RenderTexturedQuad(MarioSprite, Transform2D(glm::vec2(WindowSize.x * (x + 0.5f) / (float)size, WindowSize.y * (y + 0.5f) / (float)size), glm::vec2(0.4f)));
+                Renderer::Get().RenderTexturedQuad(backgroundTexture, Transform2D(glm::vec2(WindowSize.x * (x + 0.5f) / (float)size, WindowSize.y * (y + 0.5f) / (float)size), glm::vec2(0.4f)));
             }
         }
     }
+    
+    Renderer::Get().RenderTexturedQuad(subTextureTest0, Transform2D(glm::vec2(200.0f, 200.0f), glm::vec2(0.2f)));
+    Renderer::Get().RenderTexturedQuad(subTextureTest1, Transform2D(glm::vec2(400.0f, 200.0f), glm::vec2(0.2f)));
+    Renderer::Get().RenderTexturedQuad(subTextureTest2, Transform2D(glm::vec2(600.0f, 200.0f), glm::vec2(0.2f)));
 
     Renderer::Get().RenderQuad(Transform2D(glm::vec2(WindowSize.x / 2 + 250, WindowSize.y / 2), glm::vec2(100.0f, 100.0f), glm::pi<float>() / 4.0f), glm::vec4(0.4f, 0.7f, 0.3f, 1.0f));
 
-    Renderer::Get().RenderTexturedQuad(GodSprite, Transform2D(glm::vec2(WindowSize.x / 2 + sinf(theta) * 150, WindowSize.y / 2), glm::vec2(0.4f), theta));
+    Renderer::Get().RenderTexturedQuad(rotatingTexture, Transform2D(glm::vec2(WindowSize.x / 2 + sinf(theta) * 150, WindowSize.y / 2), glm::vec2(0.4f), theta));
 
     {
         if(Input::Get().IsKeyJustPressed(SDLK_SPACE))

@@ -2,15 +2,10 @@
 
 #include <glad/glad.h>
 #include <glm/glm.hpp>
-#include <glm/ext/matrix_transform.hpp>
 #include <glm/ext/matrix_clip_space.hpp>
-#include <glm/gtx/rotate_vector.hpp>
 
-#include "Input.hpp"
-#include "Game.hpp"
-#include "Mesh.hpp"
-#include "Shader.hpp"
-#include "Texture.hpp"
+#include "../Input.hpp"
+#include "../Game.hpp"
 
 void Renderer::Init(SDL_Window *pWindow)
 {
@@ -39,6 +34,8 @@ void Renderer::Init(SDL_Window *pWindow)
     m_2DShader->SetIntArray("u_Textures", 32, textures);
     m_iDrawCalls = 0;
 
+    m_TextureSlots.fill(SDL_MAX_UINT32);
+
     int width, height;
     SDL_GetWindowSize(m_pWindow, &width, &height);
     glViewport(0, 0, width, height);
@@ -62,14 +59,13 @@ void Renderer::RenderTexturedQuad(std::shared_ptr<Texture> sprite, const glm::ma
     int slot = -1;
     for(int i = 0; i < 32; i++)
     {
-        std::shared_ptr<Texture> curSlot = m_TextureSlots[i].lock();
-        if(!curSlot)
+        if(m_TextureSlots[i] == SDL_MAX_UINT32)
         {
-            m_TextureSlots[i] = sprite;
+            m_TextureSlots[i] = sprite->GetTextureID();
             slot = i;
             break;
         }
-        if(curSlot == sprite)
+        if(m_TextureSlots[i] == sprite->GetTextureID())
         {
             slot = i;
             break;
@@ -86,10 +82,12 @@ void Renderer::RenderTexturedQuad(std::shared_ptr<Texture> sprite, const glm::ma
     glm::vec4 top_right    = transform * glm::vec4( sprite->GetWidth() / 2.0f,  sprite->GetHeight() / 2.0f, 0.0f, 1.0f);
     glm::vec4 top_left     = transform * glm::vec4(-sprite->GetWidth() / 2.0f,  sprite->GetHeight() / 2.0f, 0.0f, 1.0f);
 
-    m_Vertices[0 + m_QuadCount * 4] = Vertex{ glm::vec2(bottom_left .x, bottom_left .y + m_RenderWindowSize.y), glm::vec2(0.0f, 0.0f), glm::vec4(1.0f), (float)slot };
-    m_Vertices[1 + m_QuadCount * 4] = Vertex{ glm::vec2(bottom_right.x, bottom_right.y + m_RenderWindowSize.y), glm::vec2(1.0f, 0.0f), glm::vec4(1.0f), (float)slot };
-    m_Vertices[2 + m_QuadCount * 4] = Vertex{ glm::vec2(top_right   .x, top_right   .y + m_RenderWindowSize.y), glm::vec2(1.0f, 1.0f), glm::vec4(1.0f), (float)slot };
-    m_Vertices[3 + m_QuadCount * 4] = Vertex{ glm::vec2(top_left    .x, top_left    .y + m_RenderWindowSize.y), glm::vec2(0.0f, 1.0f), glm::vec4(1.0f), (float)slot };
+    auto&[topLeftUV, bottomRightUV] = sprite->GetUV();
+
+    m_Vertices[0 + m_QuadCount * 4] = Vertex{ glm::vec2(bottom_left .x, bottom_left .y), glm::vec2(topLeftUV.x,     topLeftUV.y    ), glm::vec4(1.0f), (float)slot };
+    m_Vertices[1 + m_QuadCount * 4] = Vertex{ glm::vec2(bottom_right.x, bottom_right.y), glm::vec2(bottomRightUV.x, topLeftUV.y    ), glm::vec4(1.0f), (float)slot };
+    m_Vertices[2 + m_QuadCount * 4] = Vertex{ glm::vec2(top_right   .x, top_right   .y), glm::vec2(bottomRightUV.x, bottomRightUV.y), glm::vec4(1.0f), (float)slot };
+    m_Vertices[3 + m_QuadCount * 4] = Vertex{ glm::vec2(top_left    .x, top_left    .y), glm::vec2(topLeftUV.x,     bottomRightUV.y), glm::vec4(1.0f), (float)slot };
     m_QuadCount++;
 
     if(m_QuadCount == MAX_QUADS)
@@ -103,10 +101,10 @@ void Renderer::RenderQuad(const glm::mat4 &transform, const glm::vec4 &color)
     glm::vec4 top_right    = transform * glm::vec4( 1.0f,  1.0f, 0.0f, 1.0f);
     glm::vec4 top_left     = transform * glm::vec4(-1.0f,  1.0f, 0.0f, 1.0f);
 
-    m_Vertices[0 + m_QuadCount * 4] = Vertex{ glm::vec2(bottom_left .x, bottom_left .y + m_RenderWindowSize.y), glm::vec2(0.0f, 0.0f), color, -1.0f };
-    m_Vertices[1 + m_QuadCount * 4] = Vertex{ glm::vec2(bottom_right.x, bottom_right.y + m_RenderWindowSize.y), glm::vec2(1.0f, 0.0f), color, -1.0f };
-    m_Vertices[2 + m_QuadCount * 4] = Vertex{ glm::vec2(top_right   .x, top_right   .y + m_RenderWindowSize.y), glm::vec2(1.0f, 1.0f), color, -1.0f };
-    m_Vertices[3 + m_QuadCount * 4] = Vertex{ glm::vec2(top_left    .x, top_left    .y + m_RenderWindowSize.y), glm::vec2(0.0f, 1.0f), color, -1.0f };
+    m_Vertices[0 + m_QuadCount * 4] = Vertex{ glm::vec2(bottom_left .x, bottom_left .y), glm::vec2(0.0f, 0.0f), color, -1.0f };
+    m_Vertices[1 + m_QuadCount * 4] = Vertex{ glm::vec2(bottom_right.x, bottom_right.y), glm::vec2(1.0f, 0.0f), color, -1.0f };
+    m_Vertices[2 + m_QuadCount * 4] = Vertex{ glm::vec2(top_right   .x, top_right   .y), glm::vec2(1.0f, 1.0f), color, -1.0f };
+    m_Vertices[3 + m_QuadCount * 4] = Vertex{ glm::vec2(top_left    .x, top_left    .y), glm::vec2(0.0f, 1.0f), color, -1.0f };
     m_QuadCount++;
 
     if(m_QuadCount == MAX_QUADS)
@@ -178,10 +176,11 @@ void Renderer::DrawQuadBuffer()
 
     for(int i = 0; i < 32; i++)
     {
-        if(std::shared_ptr<Texture> slot = m_TextureSlots[i].lock())
+        if(m_TextureSlots[i] != SDL_MAX_UINT32)
         {
-            slot->Bind(i);
-            m_TextureSlots[i] = std::weak_ptr<Texture>();
+            glActiveTexture(GL_TEXTURE0 + i);
+            glBindTexture(GL_TEXTURE_2D, m_TextureSlots[i]);
+            m_TextureSlots[i] = SDL_MAX_UINT32;
         } else break;
     }
 
@@ -198,52 +197,4 @@ void Renderer::OnResize(int width, int height)
 {
     glViewport(0, 0, width, height);
     m_RenderWindowSize = glm::vec2(width, height);
-}
-
-Transform2D::Transform2D(const glm::vec2 &_translation, const glm::vec2 &_scale, float _rotation)
-        : m_Translation(_translation), m_Scale(_scale), m_Rotation(_rotation), m_DoRecalculateMatrix(true), m_Matrix(glm::mat4(1.0f)) { }
-
-const glm::mat4 &Transform2D::GetMatrix()
-{
-    if(m_DoRecalculateMatrix)
-    {
-        RecalculateMatrix();
-        m_DoRecalculateMatrix = false;
-    }
-    return m_Matrix;
-}
-
-void Transform2D::SetTranslation(const glm::vec2 translation)
-{
-    if(translation != m_Translation)
-    {
-        m_Translation = translation;
-        m_DoRecalculateMatrix = true;
-    }
-}
-
-void Transform2D::SetScale(const glm::vec2 scale)
-{
-    if(scale != m_Scale)
-    {
-        m_Scale = scale;
-        m_DoRecalculateMatrix = true;
-    }
-}
-
-void Transform2D::SetRotation(float rotation)
-{
-    if(rotation != m_Rotation)
-    {
-        m_Rotation = rotation;
-        m_DoRecalculateMatrix = true;
-    }
-}
-
-void Transform2D::RecalculateMatrix()
-{
-    m_Matrix = glm::mat4(1.0f);
-    m_Matrix = glm::translate(m_Matrix, glm::vec3(m_Translation.x, -m_Translation.y, 0.0f));
-    m_Matrix = glm::scale(m_Matrix, glm::vec3(m_Scale, 1.0f));
-    m_Matrix = glm::rotate(m_Matrix, m_Rotation, glm::vec3(0.0f, 0.0f, 1.0f));
 }

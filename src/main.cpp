@@ -1,7 +1,7 @@
 #include <SDL2/SDL.h>
 #include <iostream>
 
-#include "Renderer.hpp"
+#include "Render/Renderer.hpp"
 #include "Game.hpp"
 #include "Input.hpp"
 

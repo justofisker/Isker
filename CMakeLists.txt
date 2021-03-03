@@ -7,11 +7,11 @@ project(${game_name} VERSION 0.1.0)
 set (source
     "${PROJECT_SOURCE_DIR}/src/main.cpp"
     "${PROJECT_SOURCE_DIR}/src/Game.cpp"
-    "${PROJECT_SOURCE_DIR}/src/Renderer.cpp"
     "${PROJECT_SOURCE_DIR}/src/Input.cpp"
-    "${PROJECT_SOURCE_DIR}/src/Texture.cpp"
-    "${PROJECT_SOURCE_DIR}/src/Mesh.cpp"
-    "${PROJECT_SOURCE_DIR}/src/Shader.cpp"
+    "${PROJECT_SOURCE_DIR}/src/Render/Renderer.cpp"
+    "${PROJECT_SOURCE_DIR}/src/Render/Shader.cpp"
+    "${PROJECT_SOURCE_DIR}/src/Render/Texture.cpp"
+    "${PROJECT_SOURCE_DIR}/src/Component/Transform2D.cpp"
     "${PROJECT_SOURCE_DIR}/thirdparty/glad/src/glad.c"
     "${PROJECT_SOURCE_DIR}/src/one_time_implements.c"
     )

@@ -1,0 +1,51 @@
+#pragma once
+
+#include <memory>
+#include <array>
+
+#include <glm/vec4.hpp>
+#include <glm/vec2.hpp>
+#include <glm/mat4x4.hpp>
+#include <SDL2/SDL.h>
+
+#include "../Singleton.hpp"
+#include "Shader.hpp"
+#include "Texture.hpp"
+
+#define MAX_QUADS 1024
+
+class Transform2D;
+
+class Renderer {
+    SINGLETON(Renderer);
+private:
+    SDL_Window *m_pWindow;
+    SDL_GLContext m_OpenGLContext;
+    std::unique_ptr<Shader> m_2DShader;
+    unsigned int m_QuadBufferVetexArrayObject,
+                 m_QuadBufferVertexBuffer,
+                 m_QuadBufferIndexBuffer;
+    struct Vertex
+    {
+        glm::vec2 position;
+        glm::vec2 uv;
+        glm::vec4 color;
+        float texture;
+    };
+    std::array<Vertex, MAX_QUADS * 4> m_Vertices;
+    int m_QuadCount;
+    std::array<unsigned int, 32> m_TextureSlots;
+    unsigned int m_iDrawCalls;
+    glm::vec2 m_RenderWindowSize;
+public:
+    void Init(SDL_Window *pWindow);
+    void RenderBegin();
+    void RenderTexturedQuad(std::shared_ptr<Texture> texture, const glm::mat4 &transform);
+    void RenderQuad(const glm::mat4 &transform, const glm::vec4 &color = glm::vec4(1.0f));
+    void RenderEnd();
+    void OnResize(int width, int height);
+    inline const glm::vec2 &GetRenderSize() { return m_RenderWindowSize; }
+private:
+    void CreateQuadBuffer(int max_count);
+    void DrawQuadBuffer();
+};
