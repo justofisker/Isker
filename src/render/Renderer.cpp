@@ -92,21 +92,50 @@ void Renderer::RenderQuad(const glm::mat4 &transform, const glm::vec4 &color)
         DrawQuadBuffer();
 }
 
-void Renderer::RenderText(const glm::ivec2 &position, std::shared_ptr<Font> font, const std::string &text, const glm::vec4 &color)
+void Renderer::RenderText(const glm::ivec2 &position, std::shared_ptr<Font> font, const std::string &text, const glm::vec4 &color, TextHAlign halign, TextVAlign valign)
 {
     int slot = GetBufferTextureSlot(font->GetTexture()->GetTextureID());
 
     unsigned int x_pos = position.x;
-    unsigned int y_pos = Renderer::Get().GetRenderSize().y - position.y;
+    unsigned int y_pos = (int)Renderer::Get().GetRenderSize().y - position.y;
+
+    float y_offset = 0.0f;
+    switch(valign)
+    {
+        case TextVAlign::Top:
+            y_offset = -(float)font->GetFontSize();
+            break;
+        case TextVAlign::Center:
+            y_offset = -(float)font->GetFontSize() / 2.0f;
+            break;
+        case TextVAlign::Bottom:
+            y_offset = 0.0f;
+            break;
+    }
+
+    float x_offset = 0.0f;
+    switch (halign)
+    {
+    case TextHAlign::Left:
+        x_offset = 0.0f;
+        break;
+    case TextHAlign::Center:
+        x_offset = -CalculateTextSize(font, text).x / 2.0f;
+        break;
+    case TextHAlign::Right:
+        x_offset = (float)-CalculateTextSize(font, text).x;
+        break;
+    }
+    
 
     for(char c : text)
     {
         const Font::FontCharacter &character = font->GetCharacter(c);
 
-        m_Vertices[0 + m_QuadCount * 4] = Vertex{ glm::vec2(x_pos                   , y_pos)                   , glm::vec2(character.bottomLeftUV.x, character.topRightUV.y), color, (float)slot };
-        m_Vertices[1 + m_QuadCount * 4] = Vertex{ glm::vec2(x_pos + character.size.x, y_pos)                   , glm::vec2(character.topRightUV.x,   character.topRightUV.y), color, (float)slot };
-        m_Vertices[2 + m_QuadCount * 4] = Vertex{ glm::vec2(x_pos + character.size.x, y_pos + character.size.y), glm::vec2(character.topRightUV.x,   character.bottomLeftUV.y), color, (float)slot };
-        m_Vertices[3 + m_QuadCount * 4] = Vertex{ glm::vec2(x_pos                   , y_pos + character.size.y), glm::vec2(character.bottomLeftUV.x, character.bottomLeftUV.y), color, (float)slot };
+        m_Vertices[0 + m_QuadCount * 4] = Vertex{ glm::vec2(x_pos                    + x_offset, y_pos + y_offset - (character.size.y - character.bearing.y)), glm::vec2(character.bottomLeftUV.x, character.topRightUV.y), color, (float)slot };
+        m_Vertices[1 + m_QuadCount * 4] = Vertex{ glm::vec2(x_pos + character.size.x + x_offset, y_pos + y_offset - (character.size.y - character.bearing.y)), glm::vec2(character.topRightUV.x,   character.topRightUV.y), color, (float)slot };
+        m_Vertices[2 + m_QuadCount * 4] = Vertex{ glm::vec2(x_pos + character.size.x + x_offset, y_pos + y_offset - (character.size.y - character.bearing.y) + character.size.y), glm::vec2(character.topRightUV.x,   character.bottomLeftUV.y), color, (float)slot };
+        m_Vertices[3 + m_QuadCount * 4] = Vertex{ glm::vec2(x_pos                    + x_offset, y_pos + y_offset - (character.size.y - character.bearing.y) + character.size.y), glm::vec2(character.bottomLeftUV.x, character.bottomLeftUV.y), color, (float)slot };
         m_QuadCount++;
 
         x_pos += character.advance >> 6;
@@ -116,6 +145,18 @@ void Renderer::RenderText(const glm::ivec2 &position, std::shared_ptr<Font> font
             slot = GetBufferTextureSlot(font->GetTexture()->GetTextureID());
         }
     }
+}
+
+glm::ivec2 Renderer::CalculateTextSize(std::shared_ptr<Font> font, const std::string &text)
+{
+    unsigned int x_size = 0;
+    for(int i = 0; i < text.length() - 1; i++)
+    {
+        const Font::FontCharacter &character = font->GetCharacter((unsigned char)text.at(i));
+        x_size += character.advance >> 6;
+    }
+    x_size += font->GetCharacter((unsigned int)text.at(text.length() - 1)).size.x;
+    return glm::ivec2(x_size, font->GetFontSize());
 }
 
 void Renderer::RenderEnd()

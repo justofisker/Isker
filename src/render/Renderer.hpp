@@ -39,11 +39,21 @@ private:
     unsigned int m_iDrawCalls;
     glm::vec2 m_RenderWindowSize;
 public:
+    enum class TextVAlign
+    {
+        Top, Center, Bottom
+    };
+    enum class TextHAlign
+    {
+        Left, Center, Right
+    };
+public:
     void Init(SDL_Window *pWindow);
     void RenderBegin();
     void RenderTexturedQuad(std::shared_ptr<Texture> texture, const glm::mat4 &transform);
     void RenderQuad(const glm::mat4 &transform, const glm::vec4 &color = glm::vec4(1.0f));
-    void RenderText(const glm::ivec2 &position, std::shared_ptr<Font> font, const std::string &text, const glm::vec4 &color = glm::vec4(1.0f));
+    void RenderText(const glm::ivec2 &position, std::shared_ptr<Font> font, const std::string &text, const glm::vec4 &color = glm::vec4(1.0f), TextHAlign halign = TextHAlign::Left, TextVAlign valign = TextVAlign::Top);
+    glm::ivec2 CalculateTextSize(std::shared_ptr<Font> font, const std::string &text);
     void RenderEnd();
     void OnResize(int width, int height);
     inline const glm::vec2 &GetRenderSize() { return m_RenderWindowSize; }

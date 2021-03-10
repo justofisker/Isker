@@ -49,7 +49,7 @@ void Game::Frame(float delta)
     static std::shared_ptr<Texture> subTextureTest0    = std::make_shared<Texture>("asset/image/subtexturetest.png");
     static std::shared_ptr<SubTexture> subTextureTest1 = std::make_shared<SubTexture>(subTextureTest0, 100, 100, 900, 900);
     static std::shared_ptr<SubTexture> subTextureTest2 = std::make_shared<SubTexture>(subTextureTest1, 100, 100, 800, 800);
-    static std::shared_ptr<Font> robotoFont = std::make_shared<Font>(FontBuilder(), "asset/font/Roboto/Roboto-Regular.ttf", 32); 
+    static std::shared_ptr<Font> robotoFont = std::make_shared<Font>(FontBuilder(), "asset/font/Roboto/Roboto-Bold.ttf", 34); 
 
     auto& RenderSize = Renderer::Get().GetRenderSize();
 
@@ -102,7 +102,26 @@ void Game::Frame(float delta)
         Renderer::Get().RenderQuad(Transform2D(glm::vec2(scale * groundPos.x + RenderSize.x / 2.0f, RenderSize.y - scale * groundPos.y - 100), glm::vec2(50.0f, 10.0f) * scale, groundRotation));
     }
 
-    Renderer::Get().RenderText(glm::ivec2(400), robotoFont, "Hello World :)");
+    Renderer::Get().RenderText(glm::ivec2(300, 100), robotoFont, "Gamer Time!", glm::vec4(1.0f, 0.7f, 0.2f, 1.0f));
+    Renderer::Get().RenderText(glm::ivec2(300, 140), robotoFont, "Gamer Time!", glm::vec4(1.0f, 0.7f, 0.2f, 1.0f), Renderer::TextHAlign::Center);
+    Renderer::Get().RenderText(glm::ivec2(300, 180), robotoFont, "Gamer Time!", glm::vec4(1.0f, 0.7f, 0.2f, 1.0f), Renderer::TextHAlign::Right);
+    Renderer::Get().RenderText(glm::ivec2(300, 220), robotoFont, "Gamer Time!", glm::vec4(1.0f, 0.7f, 0.2f, 1.0f));
+    Renderer::Get().RenderText(glm::ivec2(500, 220), robotoFont, "Gamer Time!", glm::vec4(1.0f, 0.7f, 0.2f, 1.0f), Renderer::TextHAlign::Left, Renderer::TextVAlign::Center);
+    Renderer::Get().RenderText(glm::ivec2(700, 220), robotoFont, "Gamer Time!", glm::vec4(1.0f, 0.7f, 0.2f, 1.0f), Renderer::TextHAlign::Left, Renderer::TextVAlign::Bottom);
+
+    {
+        const static unsigned int fps_history_count = 15;
+        static int fps_pos = 0;
+        static std::array<float, fps_history_count> fps_history = { 0.0f };
+        fps_history[fps_pos] = delta;
+        fps_pos = (fps_pos + 1) % fps_history_count;
+        float fps = 0.0f;
+        for(auto f : fps_history)
+            fps += f;
+        fps /= fps_history_count;
+        fps = 1.0f / fps;
+        Renderer::Get().RenderText(glm::ivec2(10), robotoFont, std::string("FPS: ").append(std::to_string((int)ceilf(fps))), glm::vec4(1.0f, 0.7f, 0.2f, 1.0f));
+    }
 
     Renderer::Get().RenderQuad(Transform2D(Input::Get().GetMousePosition(), glm::vec2(10.0f)));
 

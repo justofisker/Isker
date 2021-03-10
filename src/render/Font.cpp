@@ -5,7 +5,7 @@
 #include <glad/glad.h>
 
 Font::Font(const FontBuilder &fontBuilder, const std::string& font_path, int font_size)
-    : m_Characters(std::unique_ptr<FontCharacter[]>(new FontCharacter[128]))
+    : m_Characters(std::unique_ptr<FontCharacter[]>(new FontCharacter[128])), m_FontSize(font_size)
 {
     const unsigned int texture_rows = 11;
     const unsigned int texture_size = texture_rows * font_size;
@@ -92,7 +92,7 @@ Font::Font(const FontBuilder &fontBuilder, const std::string& font_path, int fon
     glBindTexture(GL_TEXTURE_2D, 0);
 }
 
-const Font::FontCharacter &Font::GetCharacter(unsigned char c)
+const Font::FontCharacter &Font::GetCharacter(unsigned char c) const
 {
     return m_Characters[c];
 }

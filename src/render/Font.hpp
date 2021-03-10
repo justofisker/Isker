@@ -39,7 +39,8 @@ public:
     Font(const FontBuilder &fontBuilder, const std::string &font_path, int font_size);
     Font(const Font&) = delete;
     inline std::shared_ptr<Texture> GetTexture() const { return m_Texture; };
-    const FontCharacter &GetCharacter(unsigned char c);
+    const FontCharacter &GetCharacter(unsigned char c) const;
+    inline unsigned int GetFontSize() const { return m_FontSize; }
     ~Font();
 private:
     class FontTexture : public Texture
@@ -49,4 +50,5 @@ private:
     };
     std::unique_ptr<FontCharacter[]> m_Characters;
     std::shared_ptr<FontTexture> m_Texture;
+    unsigned int m_FontSize;
 };
