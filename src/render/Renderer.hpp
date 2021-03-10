@@ -11,6 +11,7 @@
 #include "../Singleton.hpp"
 #include "Shader.hpp"
 #include "Texture.hpp"
+#include "Font.hpp"
 
 #define MAX_QUADS 1024
 
@@ -42,10 +43,12 @@ public:
     void RenderBegin();
     void RenderTexturedQuad(std::shared_ptr<Texture> texture, const glm::mat4 &transform);
     void RenderQuad(const glm::mat4 &transform, const glm::vec4 &color = glm::vec4(1.0f));
+    void RenderText(const glm::ivec2 &position, std::shared_ptr<Font> font, const std::string &text, const glm::vec4 &color = glm::vec4(1.0f));
     void RenderEnd();
     void OnResize(int width, int height);
     inline const glm::vec2 &GetRenderSize() { return m_RenderWindowSize; }
 private:
     void CreateQuadBuffer(int max_count);
     void DrawQuadBuffer();
+    int GetBufferTextureSlot(unsigned int textureID);
 };

@@ -11,6 +11,7 @@ set (source
     "${PROJECT_SOURCE_DIR}/src/Render/Renderer.cpp"
     "${PROJECT_SOURCE_DIR}/src/Render/Shader.cpp"
     "${PROJECT_SOURCE_DIR}/src/Render/Texture.cpp"
+    "${PROJECT_SOURCE_DIR}/src/Render/Font.cpp"
     "${PROJECT_SOURCE_DIR}/src/Component/Transform2D.cpp"
     "${PROJECT_SOURCE_DIR}/thirdparty/glad/src/glad.c"
     "${PROJECT_SOURCE_DIR}/src/one_time_implements.c"

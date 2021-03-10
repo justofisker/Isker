@@ -56,38 +56,19 @@ void Renderer::RenderBegin()
 
 void Renderer::RenderTexturedQuad(std::shared_ptr<Texture> sprite, const glm::mat4 &transform)
 {
-    int slot = -1;
-    for(int i = 0; i < 32; i++)
-    {
-        if(m_TextureSlots[i] == SDL_MAX_UINT32)
-        {
-            m_TextureSlots[i] = sprite->GetTextureID();
-            slot = i;
-            break;
-        }
-        if(m_TextureSlots[i] == sprite->GetTextureID())
-        {
-            slot = i;
-            break;
-        }
-    }
-    if(slot == -1)
-    {
-        DrawQuadBuffer();
-        return RenderTexturedQuad(sprite, transform);
-    }
+    int slot = GetBufferTextureSlot(sprite->GetTextureID());
 
     glm::vec4 bottom_left  = transform * glm::vec4(-sprite->GetWidth() / 2.0f, -sprite->GetHeight() / 2.0f, 0.0f, 1.0f);
     glm::vec4 bottom_right = transform * glm::vec4( sprite->GetWidth() / 2.0f, -sprite->GetHeight() / 2.0f, 0.0f, 1.0f);
     glm::vec4 top_right    = transform * glm::vec4( sprite->GetWidth() / 2.0f,  sprite->GetHeight() / 2.0f, 0.0f, 1.0f);
     glm::vec4 top_left     = transform * glm::vec4(-sprite->GetWidth() / 2.0f,  sprite->GetHeight() / 2.0f, 0.0f, 1.0f);
 
-    auto&[topLeftUV, bottomRightUV] = sprite->GetUV();
+    auto&[bottomLeftUV, topRightUV] = sprite->GetUV();
 
-    m_Vertices[0 + m_QuadCount * 4] = Vertex{ glm::vec2(bottom_left .x, bottom_left .y), glm::vec2(topLeftUV.x,     topLeftUV.y    ), glm::vec4(1.0f), (float)slot };
-    m_Vertices[1 + m_QuadCount * 4] = Vertex{ glm::vec2(bottom_right.x, bottom_right.y), glm::vec2(bottomRightUV.x, topLeftUV.y    ), glm::vec4(1.0f), (float)slot };
-    m_Vertices[2 + m_QuadCount * 4] = Vertex{ glm::vec2(top_right   .x, top_right   .y), glm::vec2(bottomRightUV.x, bottomRightUV.y), glm::vec4(1.0f), (float)slot };
-    m_Vertices[3 + m_QuadCount * 4] = Vertex{ glm::vec2(top_left    .x, top_left    .y), glm::vec2(topLeftUV.x,     bottomRightUV.y), glm::vec4(1.0f), (float)slot };
+    m_Vertices[0 + m_QuadCount * 4] = Vertex{ glm::vec2(bottom_left .x, bottom_left .y), glm::vec2(bottomLeftUV.x,     bottomLeftUV.y    ), glm::vec4(1.0f), (float)slot };
+    m_Vertices[1 + m_QuadCount * 4] = Vertex{ glm::vec2(bottom_right.x, bottom_right.y), glm::vec2(topRightUV.x, bottomLeftUV.y    ), glm::vec4(1.0f), (float)slot };
+    m_Vertices[2 + m_QuadCount * 4] = Vertex{ glm::vec2(top_right   .x, top_right   .y), glm::vec2(topRightUV.x, topRightUV.y), glm::vec4(1.0f), (float)slot };
+    m_Vertices[3 + m_QuadCount * 4] = Vertex{ glm::vec2(top_left    .x, top_left    .y), glm::vec2(bottomLeftUV.x,     topRightUV.y), glm::vec4(1.0f), (float)slot };
     m_QuadCount++;
 
     if(m_QuadCount == MAX_QUADS)
@@ -109,6 +90,32 @@ void Renderer::RenderQuad(const glm::mat4 &transform, const glm::vec4 &color)
 
     if(m_QuadCount == MAX_QUADS)
         DrawQuadBuffer();
+}
+
+void Renderer::RenderText(const glm::ivec2 &position, std::shared_ptr<Font> font, const std::string &text, const glm::vec4 &color)
+{
+    int slot = GetBufferTextureSlot(font->GetTexture()->GetTextureID());
+
+    unsigned int x_pos = position.x;
+    unsigned int y_pos = Renderer::Get().GetRenderSize().y - position.y;
+
+    for(char c : text)
+    {
+        const Font::FontCharacter &character = font->GetCharacter(c);
+
+        m_Vertices[0 + m_QuadCount * 4] = Vertex{ glm::vec2(x_pos                   , y_pos)                   , glm::vec2(character.bottomLeftUV.x, character.topRightUV.y), color, (float)slot };
+        m_Vertices[1 + m_QuadCount * 4] = Vertex{ glm::vec2(x_pos + character.size.x, y_pos)                   , glm::vec2(character.topRightUV.x,   character.topRightUV.y), color, (float)slot };
+        m_Vertices[2 + m_QuadCount * 4] = Vertex{ glm::vec2(x_pos + character.size.x, y_pos + character.size.y), glm::vec2(character.topRightUV.x,   character.bottomLeftUV.y), color, (float)slot };
+        m_Vertices[3 + m_QuadCount * 4] = Vertex{ glm::vec2(x_pos                   , y_pos + character.size.y), glm::vec2(character.bottomLeftUV.x, character.bottomLeftUV.y), color, (float)slot };
+        m_QuadCount++;
+
+        x_pos += character.advance >> 6;
+
+        if(m_QuadCount == MAX_QUADS) {
+            DrawQuadBuffer();
+            slot = GetBufferTextureSlot(font->GetTexture()->GetTextureID());
+        }
+    }
 }
 
 void Renderer::RenderEnd()
@@ -191,6 +198,25 @@ void Renderer::DrawQuadBuffer()
     
     m_QuadCount = 0;
     m_iDrawCalls++;
+}
+
+int Renderer::GetBufferTextureSlot(unsigned int textureID)
+{
+    int slot = -1;
+    for(int i = 0; i < 32; i++)
+    {
+        if(m_TextureSlots[i] == SDL_MAX_UINT32)
+        {
+            m_TextureSlots[i] = textureID;
+            return i;
+        }
+        if(m_TextureSlots[i] == textureID)
+        {
+            return i;
+        }
+    }
+    DrawQuadBuffer();
+    return GetBufferTextureSlot(textureID);
 }
 
 void Renderer::OnResize(int width, int height)

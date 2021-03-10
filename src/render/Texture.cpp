@@ -37,7 +37,7 @@ Texture::~Texture()
     if(m_TextureID != SDL_MAX_UINT32) glDeleteTextures(1, &m_TextureID);
 }
 
-Texture::Texture(unsigned int textureID, const glm::vec2 &size, int channels)
+Texture::Texture(unsigned int textureID, const glm::ivec2 &size, int channels)
     : m_TextureID(textureID), m_Size(size), m_Channels(channels)
 {
 

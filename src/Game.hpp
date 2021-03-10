@@ -12,5 +12,4 @@ private:
 public:
     void Init(SDL_Window *pWindow);
     void Frame(float delta);
-    glm::vec2 GetGameWindowSize();
 };

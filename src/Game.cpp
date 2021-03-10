@@ -49,8 +49,9 @@ void Game::Frame(float delta)
     static std::shared_ptr<Texture> subTextureTest0    = std::make_shared<Texture>("asset/image/subtexturetest.png");
     static std::shared_ptr<SubTexture> subTextureTest1 = std::make_shared<SubTexture>(subTextureTest0, 100, 100, 900, 900);
     static std::shared_ptr<SubTexture> subTextureTest2 = std::make_shared<SubTexture>(subTextureTest1, 100, 100, 800, 800);
+    static std::shared_ptr<Font> robotoFont = std::make_shared<Font>(FontBuilder(), "asset/font/Roboto/Roboto-Regular.ttf", 32); 
 
-    glm::vec2 WindowSize = GetGameWindowSize();
+    auto& RenderSize = Renderer::Get().GetRenderSize();
 
     Renderer::Get().RenderBegin();
 
@@ -63,7 +64,7 @@ void Game::Frame(float delta)
         {
             for(int y = 0; y < size; y++)
             {
-                Renderer::Get().RenderTexturedQuad(backgroundTexture, Transform2D(glm::vec2(WindowSize.x * (x + 0.5f) / (float)size, WindowSize.y * (y + 0.5f) / (float)size), glm::vec2(0.4f)));
+                Renderer::Get().RenderTexturedQuad(backgroundTexture, Transform2D(glm::vec2(RenderSize.x * (x + 0.5f) / (float)size, RenderSize.y * (y + 0.5f) / (float)size), glm::vec2(0.4f)));
             }
         }
     }
@@ -72,9 +73,9 @@ void Game::Frame(float delta)
     Renderer::Get().RenderTexturedQuad(subTextureTest1, Transform2D(glm::vec2(400.0f, 200.0f), glm::vec2(0.2f)));
     Renderer::Get().RenderTexturedQuad(subTextureTest2, Transform2D(glm::vec2(600.0f, 200.0f), glm::vec2(0.2f)));
 
-    Renderer::Get().RenderQuad(Transform2D(glm::vec2(WindowSize.x / 2 + 250, WindowSize.y / 2), glm::vec2(100.0f, 100.0f), glm::pi<float>() / 4.0f), glm::vec4(0.4f, 0.7f, 0.3f, 1.0f));
+    Renderer::Get().RenderQuad(Transform2D(glm::vec2(RenderSize.x / 2 + 250, RenderSize.y / 2), glm::vec2(100.0f, 100.0f), glm::pi<float>() / 4.0f), glm::vec4(0.4f, 0.7f, 0.3f, 1.0f));
 
-    Renderer::Get().RenderTexturedQuad(rotatingTexture, Transform2D(glm::vec2(WindowSize.x / 2 + sinf(theta) * 150, WindowSize.y / 2), glm::vec2(0.4f), theta));
+    Renderer::Get().RenderTexturedQuad(rotatingTexture, Transform2D(glm::vec2(RenderSize.x / 2 + sinf(theta) * 150, RenderSize.y / 2), glm::vec2(0.4f), theta));
 
     {
         if(Input::Get().IsKeyJustPressed(SDLK_SPACE))
@@ -97,18 +98,13 @@ void Game::Frame(float delta)
         b2Vec2 groundPos = groundBody->GetPosition();
         float groundRotation = groundBody->GetAngle();
         
-        Renderer::Get().RenderQuad(Transform2D(glm::vec2(scale * bodyPos.x   + WindowSize.x / 2.0f, WindowSize.y - scale * bodyPos.y   - 100), glm::vec2(1.0f) * scale         , bodyRotation), glm::vec4(0.3f, 0.4f, 0.5f, 1.0f));
-        Renderer::Get().RenderQuad(Transform2D(glm::vec2(scale * groundPos.x + WindowSize.x / 2.0f, WindowSize.y - scale * groundPos.y - 100), glm::vec2(50.0f, 10.0f) * scale, groundRotation));
+        Renderer::Get().RenderQuad(Transform2D(glm::vec2(scale * bodyPos.x   + RenderSize.x / 2.0f, RenderSize.y - scale * bodyPos.y   - 100), glm::vec2(1.0f) * scale         , bodyRotation), glm::vec4(0.3f, 0.4f, 0.5f, 1.0f));
+        Renderer::Get().RenderQuad(Transform2D(glm::vec2(scale * groundPos.x + RenderSize.x / 2.0f, RenderSize.y - scale * groundPos.y - 100), glm::vec2(50.0f, 10.0f) * scale, groundRotation));
     }
+
+    Renderer::Get().RenderText(glm::ivec2(400), robotoFont, "Hello World :)");
 
     Renderer::Get().RenderQuad(Transform2D(Input::Get().GetMousePosition(), glm::vec2(10.0f)));
 
     Renderer::Get().RenderEnd();
-}
-
-glm::vec2 Game::GetGameWindowSize()
-{
-    int w, h;
-    SDL_GetWindowSize(m_pWindow, &w, &h);
-    return glm::vec2(w, h);
 }
