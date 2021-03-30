@@ -59,8 +59,6 @@ void Renderer::Init(SDL_Window *pWindow)
     glFrontFace(GL_CCW);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     glEnable(GL_BLEND);
-
-    SDL_GL_SetSwapInterval(0);
 }
 
 void Renderer::RenderBegin()

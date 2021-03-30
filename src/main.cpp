@@ -91,7 +91,7 @@ int main()
 #ifdef __EMSCRIPTEN__
     emscripten_set_main_loop(gameLoop, 0, true);
 #else
-    while(bRunning) { gameLoop() }
+    while(bRunning) { gameLoop(); }
 #endif
 
     SDL_DestroyWindow(pWindow);

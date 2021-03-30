@@ -28,15 +28,15 @@ elseif (UNIX)
 elseif (WIN32)
     add_executable(Isker ${source})
     if (MSVC)
-        target_link_libraries(Isker "${PROJECT_SOURCE_DIR}/thirdparty/SDL2/x86_64-VS/SDL2.lib")
+        target_link_libraries(Isker "${PROJECT_SOURCE_DIR}/thirdparty/SDL2/VS/SDL2.lib")
         add_compile_definitions(SDL_MAIN_HANDLED)
     else (MSVC)
-        target_link_libraries(Isker "${PROJECT_SOURCE_DIR}/thirdparty/SDL2/x86_64-w64-mingw32/lib/libSDL2.dll.a")
+        target_link_libraries(Isker "${PROJECT_SOURCE_DIR}/thirdparty/SDL2/MinGW/libSDL2.dll.a")
         add_compile_definitions(SDL_MAIN_HANDLED)
     endif (MSVC)
     add_custom_command(TARGET Isker POST_BUILD
         COMMAND ${CMAKE_COMMAND} -E copy
-        ${CMAKE_SOURCE_DIR}/thirdparty/SDL2/x86_64-w64-mingw32/bin/SDL2.dll $<TARGET_FILE_DIR:Isker>/SDL2.dll)
+        ${CMAKE_SOURCE_DIR}/thirdparty/SDL2/SDL2.dll $<TARGET_FILE_DIR:Isker>/SDL2.dll)
     add_custom_command(TARGET Isker POST_BUILD
         COMMAND ${CMAKE_COMMAND} -E copy_directory
         ${CMAKE_SOURCE_DIR}/asset/ $<TARGET_FILE_DIR:Isker>/asset/)
@@ -51,7 +51,7 @@ if (NOT DEFINED EMSCRIPTEN)
 endif ()
         
 target_include_directories(Isker PUBLIC
-    "${PROJECT_SOURCE_DIR}/thirdparty/SDL2/x86_64-w64-mingw32/include"
+    "${PROJECT_SOURCE_DIR}/thirdparty/SDL2/include"
     "${PROJECT_SOURCE_DIR}/thirdparty/glad/include"
     "${PROJECT_SOURCE_DIR}/thirdparty/glm"
     "${PROJECT_SOURCE_DIR}/thirdparty/stb"
