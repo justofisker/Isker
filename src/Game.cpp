@@ -1,45 +1,45 @@
 #include "Game.hpp"
 
 #include <glm/gtc/constants.hpp>
-// #include <box2d/box2d.h>
+#include <box2d/box2d.h>
 
 #include "Input.hpp"
 #include "Render/Renderer.hpp"
 #include "Render/Texture.hpp"
 #include "Component/Transform2D.hpp"
 
-//b2World *world;
-//b2Body *groundBody;
-//b2Body *body;
-//int32 velocityIterations = 8;
-//int32 positionIterations = 3;
+b2World *world;
+b2Body *groundBody;
+b2Body *body;
+int32 velocityIterations = 8;
+int32 positionIterations = 3;
 
 void Game::Init(SDL_Window *pWindow)
 {
     m_pWindow = pWindow;
 
-    //b2Vec2 gravity(0.0f, -10.0f);
-    //world = new b2World(gravity);
-//
-    //b2BodyDef groundBodyDef;
-    //groundBodyDef.position.Set(0.0f, -10.0f);
-    //groundBody = world->CreateBody(&groundBodyDef);
-    //b2PolygonShape groundBox;
-    //groundBox.SetAsBox(50.0f, 10.0f);
-    //groundBody->CreateFixture(&groundBox, 0.0f);
-//
-    //b2BodyDef bodyDef;
-    //bodyDef.type = b2_dynamicBody;
-    //bodyDef.position.Set(0.0f, 7.0f);
-    //bodyDef.angle = glm::pi<float>() / 3.0f;
-    //body = world->CreateBody(&bodyDef);
-    //b2PolygonShape dynamicBox;
-    //dynamicBox.SetAsBox(1.0f, 1.0f);
-    //b2FixtureDef fixtureDef;
-    //fixtureDef.shape = &dynamicBox;
-    //fixtureDef.density = 1.0f;
-    //fixtureDef.friction = 0.3f;
-    //body->CreateFixture(&fixtureDef);
+    b2Vec2 gravity(0.0f, -10.0f);
+    world = new b2World(gravity);
+
+    b2BodyDef groundBodyDef;
+    groundBodyDef.position.Set(0.0f, -10.0f);
+    groundBody = world->CreateBody(&groundBodyDef);
+    b2PolygonShape groundBox;
+    groundBox.SetAsBox(50.0f, 10.0f);
+    groundBody->CreateFixture(&groundBox, 0.0f);
+
+    b2BodyDef bodyDef;
+    bodyDef.type = b2_dynamicBody;
+    bodyDef.position.Set(0.0f, 7.0f);
+    bodyDef.angle = glm::pi<float>() / 3.0f;
+    body = world->CreateBody(&bodyDef);
+    b2PolygonShape dynamicBox;
+    dynamicBox.SetAsBox(1.0f, 1.0f);
+    b2FixtureDef fixtureDef;
+    fixtureDef.shape = &dynamicBox;
+    fixtureDef.density = 1.0f;
+    fixtureDef.friction = 0.3f;
+    body->CreateFixture(&fixtureDef);
 }
 
 void Game::Frame(float delta)
@@ -77,30 +77,30 @@ void Game::Frame(float delta)
 
     Renderer::Get().RenderTexturedQuad(rotatingTexture, Transform2D(glm::vec2(RenderSize.x / 2 + sinf(theta) * 150, RenderSize.y / 2), glm::vec2(0.4f), theta));
 
-    //{
-    //    if(Input::Get().IsKeyJustPressed(SDLK_SPACE))
-    //        body->ApplyLinearImpulseToCenter(b2Vec2(0.0f, 30.0f), true);
-//
-    //    float direction = 0.0f;
-//
-    //    if(Input::Get().IsKeyPressed(SDLK_LEFT) || Input::Get().IsKeyPressed(SDLK_a))
-    //        direction -= 1.0f;
-    //    if(Input::Get().IsKeyPressed(SDLK_RIGHT) || Input::Get().IsKeyPressed(SDLK_d))
-    //        direction += 1.0f;  
-//
-    //    body->ApplyForceToCenter(b2Vec2(direction * 50.0f, 0.0f), true); 
-    //    
-    //    float scale = 30.0f;
-//
-    //    world->Step(delta, velocityIterations, positionIterations);
-    //    b2Vec2 bodyPos = body->GetPosition();
-    //    float bodyRotation = body->GetAngle();
-    //    b2Vec2 groundPos = groundBody->GetPosition();
-    //    float groundRotation = groundBody->GetAngle();
-    //    
-    //    Renderer::Get().RenderQuad(Transform2D(glm::vec2(scale * bodyPos.x   + RenderSize.x / 2.0f, RenderSize.y - scale * bodyPos.y   - 100), glm::vec2(1.0f) * scale         , bodyRotation), glm::vec4(0.3f, 0.4f, 0.5f, 1.0f));
-    //    Renderer::Get().RenderQuad(Transform2D(glm::vec2(scale * groundPos.x + RenderSize.x / 2.0f, RenderSize.y - scale * groundPos.y - 100), glm::vec2(50.0f, 10.0f) * scale, groundRotation));
-    //}
+    {
+        if(Input::Get().IsKeyJustPressed(SDLK_SPACE))
+            body->ApplyLinearImpulseToCenter(b2Vec2(0.0f, 30.0f), true);
+
+        float direction = 0.0f;
+
+        if(Input::Get().IsKeyPressed(SDLK_LEFT) || Input::Get().IsKeyPressed(SDLK_a))
+            direction -= 1.0f;
+        if(Input::Get().IsKeyPressed(SDLK_RIGHT) || Input::Get().IsKeyPressed(SDLK_d))
+            direction += 1.0f;  
+
+        body->ApplyForceToCenter(b2Vec2(direction * 50.0f, 0.0f), true); 
+        
+        float scale = 30.0f;
+
+        world->Step(delta, velocityIterations, positionIterations);
+        b2Vec2 bodyPos = body->GetPosition();
+        float bodyRotation = body->GetAngle();
+        b2Vec2 groundPos = groundBody->GetPosition();
+        float groundRotation = groundBody->GetAngle();
+        
+        Renderer::Get().RenderQuad(Transform2D(glm::vec2(scale * bodyPos.x   + RenderSize.x / 2.0f, RenderSize.y - scale * bodyPos.y   - 100), glm::vec2(1.0f) * scale         , bodyRotation), glm::vec4(0.3f, 0.4f, 0.5f, 1.0f));
+        Renderer::Get().RenderQuad(Transform2D(glm::vec2(scale * groundPos.x + RenderSize.x / 2.0f, RenderSize.y - scale * groundPos.y - 100), glm::vec2(50.0f, 10.0f) * scale, groundRotation));
+    }
 
     Renderer::Get().RenderText(glm::ivec2(300, 100), robotoFont, "Gamer Time!", glm::vec4(1.0f, 0.7f, 0.2f, 1.0f));
     Renderer::Get().RenderText(glm::ivec2(300, 140), robotoFont, "Gamer Time!", glm::vec4(1.0f, 0.7f, 0.2f, 1.0f), Renderer::TextHAlign::Center);

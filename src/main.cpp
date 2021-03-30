@@ -3,7 +3,6 @@
 
 #if __EMSCRIPTEN__
 #include <emscripten/emscripten.h>
-#include <emscripten/html5.h>
 #endif
 
 #include "Render/Renderer.hpp"
@@ -66,7 +65,7 @@ void gameLoop()
 
 int main()
 {
-    if(SDL_Init(SDL_INIT_VIDEO) != 0)
+    if(SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO) != 0)
     {
         SDL_Log("Failed SDL Init!\n");
         exit(0);
@@ -76,7 +75,7 @@ int main()
         SDL_WINDOWPOS_CENTERED,
         SDL_WINDOWPOS_CENTERED,
         1280, 720,
-        SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE | SDL_WINDOW_ALLOW_HIGHDPI);
+        SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE);
     
     if(!pWindow)
     {

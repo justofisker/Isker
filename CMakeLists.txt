@@ -17,9 +17,11 @@ set (source
 
 if (EMSCRIPTEN)
     add_executable(Isker ${source})
-    # set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}" "-Wc++17-extensions")
-    set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -O3 -s USE_SDL=2 -s USE_FREETYPE=1 -s MIN_WEBGL_VERSION=2 -s MAX_WEBGL_VERSION=2 -s EXIT_RUNTIME=1 -s ASYNCIFY --preload-file ${PROJECT_SOURCE_DIR}/asset@/asset")
-    set(CMAKE_EXECUTABLE_SUFFIX ".html")
+    set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -O3 -s USE_SDL=2 -s USE_FREETYPE=1 -s MIN_WEBGL_VERSION=2 -s MAX_WEBGL_VERSION=2 -s EXIT_RUNTIME=1 -s ASYNCIFY --preload-file ${PROJECT_SOURCE_DIR}/asset@/asset -std=c++17")
+    set(CMAKE_EXECUTABLE_SUFFIX ".js")
+    add_custom_command(TARGET Isker POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E copy_directory
+        ${CMAKE_SOURCE_DIR}/platform/web/ $<TARGET_FILE_DIR:Isker>)
 elseif (UNIX)
     add_executable(Isker ${source})
     set(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake/modules)
@@ -45,11 +47,13 @@ endif (EMSCRIPTEN)
 if (NOT DEFINED EMSCRIPTEN)
     add_subdirectory("${PROJECT_SOURCE_DIR}/thirdparty/freetype")
     target_link_libraries(Isker freetype)
-
-    # add_subdirectory("${PROJECT_SOURCE_DIR}/thirdparty/box2d")
-    # target_link_libraries(Isker box2d)
 endif ()
-        
+
+set(BOX2D_BUILD_UNIT_TESTS OFF CACHE INTERNAL "")
+set(BOX2D_BUILD_TESTBED OFF CACHE INTERNAL "")
+add_subdirectory("${PROJECT_SOURCE_DIR}/thirdparty/box2d")
+target_link_libraries(Isker box2d)
+
 target_include_directories(Isker PUBLIC
     "${PROJECT_SOURCE_DIR}/thirdparty/SDL2/include"
     "${PROJECT_SOURCE_DIR}/thirdparty/glad/include"
