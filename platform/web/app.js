@@ -47,3 +47,12 @@ function createGameModule(init) {
 }
 
 var Module = createGameModule();
+
+Module.postRun.push(function () {
+    document.getElementById("canvas").focus();
+    document.getElementById("content").remove();
+});
+
+function focusCanvas() {
+    document.getElementById("canvas").focus();
+}

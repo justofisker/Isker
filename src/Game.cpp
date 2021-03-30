@@ -113,7 +113,7 @@ void Game::Frame(float delta)
             fps += f;
         fps /= fps_history_count;
         fps = 1.0f / fps;
-        Renderer::Get().RenderText((glm::ivec2)RenderSize - glm::ivec2(20), robotoFont, std::string("FPS: ").append(std::to_string((int)ceilf(fps))), glm::vec4(0.1f, 0.1f, 0.1f, 1.0f), Renderer::TextHAlign::Right, Renderer::TextVAlign::Bottom);
+        Renderer::Get().RenderText((glm::ivec2)RenderSize - glm::ivec2(170, 20), robotoFont, std::string("FPS: ").append(std::to_string((int)ceilf(fps))), glm::vec4(0.1f, 0.1f, 0.1f, 1.0f), Renderer::TextHAlign::Left, Renderer::TextVAlign::Bottom);
     }
 
     Renderer::Get().RenderEnd();
