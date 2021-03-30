@@ -1,4 +1,5 @@
-#version 330 core
+#version 300 es
+precision mediump float;
 
 in vec2  v_UV;
 in vec4  v_Color;
@@ -6,7 +7,7 @@ in float v_Texure;
 
 out vec4 FragColor;
 
-uniform sampler2D u_Textures[32];
+uniform sampler2D u_Textures[16];
 
 void main()
 {
@@ -30,21 +31,5 @@ void main()
 		case 13: FragColor *= texture(u_Textures[13], v_UV); break;
 		case 14: FragColor *= texture(u_Textures[14], v_UV); break;
 		case 15: FragColor *= texture(u_Textures[15], v_UV); break;
-		case 16: FragColor *= texture(u_Textures[16], v_UV); break;
-		case 17: FragColor *= texture(u_Textures[17], v_UV); break;
-		case 18: FragColor *= texture(u_Textures[18], v_UV); break;
-		case 19: FragColor *= texture(u_Textures[19], v_UV); break;
-		case 20: FragColor *= texture(u_Textures[20], v_UV); break;
-		case 21: FragColor *= texture(u_Textures[21], v_UV); break;
-		case 22: FragColor *= texture(u_Textures[22], v_UV); break;
-		case 23: FragColor *= texture(u_Textures[23], v_UV); break;
-		case 24: FragColor *= texture(u_Textures[24], v_UV); break;
-		case 25: FragColor *= texture(u_Textures[25], v_UV); break;
-		case 26: FragColor *= texture(u_Textures[26], v_UV); break;
-		case 27: FragColor *= texture(u_Textures[27], v_UV); break;
-		case 28: FragColor *= texture(u_Textures[28], v_UV); break;
-		case 29: FragColor *= texture(u_Textures[29], v_UV); break;
-		case 30: FragColor *= texture(u_Textures[30], v_UV); break;
-		case 31: FragColor *= texture(u_Textures[31], v_UV); break;
 	}
 }

@@ -4,11 +4,24 @@
 #include <glm/glm.hpp>
 #include <glm/ext/matrix_clip_space.hpp>
 
+#ifdef __EMSCRIPTEN__
+#include <emscripten/emscripten.h>
+#include <emscripten/html5.h>
+#endif
+
+
 #include "../Input.hpp"
 #include "../Game.hpp"
 
 void Renderer::Init(SDL_Window *pWindow)
 {
+      SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
+    #if __EMSCRIPTEN__
+      SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 0);
+    #else
+      SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 2);
+    #endif
+
     SDL_GLContext context = SDL_GL_CreateContext(pWindow);
 
     if (!context)
@@ -16,8 +29,8 @@ void Renderer::Init(SDL_Window *pWindow)
         SDL_Log("Failed to create OpenGL context!\n");
         exit(0);
     }
-    
-    if (!gladLoadGL())
+
+    if (!gladLoadGLES2Loader(SDL_GL_GetProcAddress))
     {
         SDL_Log("Failed to Load glad!\n");
         exit(0);
@@ -30,8 +43,8 @@ void Renderer::Init(SDL_Window *pWindow)
 
     m_2DShader = std::make_unique<Shader>("asset/shader/color_vert.glsl", "asset/shader/color_frag.glsl");
     m_2DShader->Bind();
-    int textures[32] = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31 };
-    m_2DShader->SetIntArray("u_Textures", 32, textures);
+    int textures[MAX_TEXTURE_IMAGE_UNITS] = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15};
+    m_2DShader->SetIntArray("u_Textures", MAX_TEXTURE_IMAGE_UNITS, textures);
     m_iDrawCalls = 0;
 
     m_TextureSlots.fill(SDL_MAX_UINT32);
@@ -46,6 +59,8 @@ void Renderer::Init(SDL_Window *pWindow)
     glFrontFace(GL_CCW);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     glEnable(GL_BLEND);
+
+    SDL_GL_SetSwapInterval(0);
 }
 
 void Renderer::RenderBegin()
@@ -63,7 +78,9 @@ void Renderer::RenderTexturedQuad(std::shared_ptr<Texture> sprite, const glm::ma
     glm::vec4 top_right    = transform * glm::vec4( sprite->GetWidth() / 2.0f,  sprite->GetHeight() / 2.0f, 0.0f, 1.0f);
     glm::vec4 top_left     = transform * glm::vec4(-sprite->GetWidth() / 2.0f,  sprite->GetHeight() / 2.0f, 0.0f, 1.0f);
 
-    auto&[bottomLeftUV, topRightUV] = sprite->GetUV();
+    const Texture::TextureUV& uv = sprite->GetUV();
+    const glm::vec2& bottomLeftUV = uv.bottomLeft;
+    const glm::vec2& topRightUV = uv.topRight;
 
     m_Vertices[0 + m_QuadCount * 4] = Vertex{ glm::vec2(bottom_left .x, bottom_left .y), glm::vec2(bottomLeftUV.x,     bottomLeftUV.y    ), glm::vec4(1.0f), (float)slot };
     m_Vertices[1 + m_QuadCount * 4] = Vertex{ glm::vec2(bottom_right.x, bottom_right.y), glm::vec2(topRightUV.x, bottomLeftUV.y    ), glm::vec4(1.0f), (float)slot };

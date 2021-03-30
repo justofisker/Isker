@@ -1,35 +1,20 @@
 #include <SDL2/SDL.h>
 #include <iostream>
 
+#if __EMSCRIPTEN__
+#include <emscripten/emscripten.h>
+#include <emscripten/html5.h>
+#endif
+
 #include "Render/Renderer.hpp"
 #include "Game.hpp"
 #include "Input.hpp"
 
-int main()
+
+static bool bRunning = 1;
+
+void gameLoop()
 {
-    if(SDL_Init(SDL_INIT_VIDEO) != 0)
-    {
-        SDL_Log("Failed SDL Init!\n");
-        exit(0);
-    }
-
-    SDL_Window *pWindow = SDL_CreateWindow("Ikser",
-        SDL_WINDOWPOS_CENTERED,
-        SDL_WINDOWPOS_CENTERED,
-        1280, 720,
-        SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE | SDL_WINDOW_ALLOW_HIGHDPI);
-    
-    if(!pWindow)
-    {
-        SDL_Log("Failed to create window!\n");
-        exit(0);
-    }
-
-    Renderer::Get().Init(pWindow);
-    Game::Get().Init(pWindow);
-    Input::Get().Init();
-    
-    bool bRunning = 1;
     SDL_Event event;
 
     while(bRunning)
@@ -77,6 +62,37 @@ int main()
         Game::Get().Frame(delta);
         Input::Get().Frame();
     }
+}
+
+int main()
+{
+    if(SDL_Init(SDL_INIT_VIDEO) != 0)
+    {
+        SDL_Log("Failed SDL Init!\n");
+        exit(0);
+    }
+
+    SDL_Window *pWindow = SDL_CreateWindow("Ikser",
+        SDL_WINDOWPOS_CENTERED,
+        SDL_WINDOWPOS_CENTERED,
+        1280, 720,
+        SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE | SDL_WINDOW_ALLOW_HIGHDPI);
+    
+    if(!pWindow)
+    {
+        SDL_Log("Failed to create window!\n");
+        exit(0);
+    }
+
+    Renderer::Get().Init(pWindow);
+    Game::Get().Init(pWindow);
+    Input::Get().Init();
+
+#ifdef __EMSCRIPTEN__
+    emscripten_set_main_loop(gameLoop, 0, true);
+#else
+    while(bRunning) { gameLoop() }
+#endif
 
     SDL_DestroyWindow(pWindow);
     SDL_Quit();

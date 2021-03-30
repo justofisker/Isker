@@ -14,6 +14,7 @@
 #include "Font.hpp"
 
 #define MAX_QUADS 1024
+#define MAX_TEXTURE_IMAGE_UNITS 16
 
 class Transform2D;
 
@@ -35,7 +36,7 @@ private:
     };
     std::array<Vertex, MAX_QUADS * 4> m_Vertices;
     int m_QuadCount;
-    std::array<unsigned int, 32> m_TextureSlots;
+    std::array<unsigned int, MAX_TEXTURE_IMAGE_UNITS> m_TextureSlots;
     unsigned int m_iDrawCalls;
     glm::vec2 m_RenderWindowSize;
 public:
