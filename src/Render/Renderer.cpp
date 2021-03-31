@@ -52,19 +52,44 @@ void Renderer::Init(SDL_Window *pWindow)
     int width, height;
     SDL_GetWindowSize(m_pWindow, &width, &height);
     glViewport(0, 0, width, height);
-    m_RenderWindowSize = glm::vec2(width, height);
+    m_GameSize = glm::vec2(width, height);
 
     glEnable(GL_CULL_FACE);
     glCullFace(GL_BACK);
     glFrontFace(GL_CCW);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     glEnable(GL_BLEND);
+    
+    SDL_GL_SetSwapInterval(1);
+
+    glEnable(GL_SCISSOR_TEST);
 }
 
 void Renderer::RenderBegin()
 {
     glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+    int w, h;
+    SDL_GetWindowSize(m_pWindow, &w, &h);
+
+    float aspect = (float)w / (float)h;
+    float targetAspect = m_GameSize.x / m_GameSize.y;
+
+    int left = 0, bottom = 0, width = w, height = h;
+
+    float aspectDiff = targetAspect / aspect;
+    if(aspectDiff < 1.0) {
+        left = (int)(w * (1.0f - aspectDiff) / 2.0f );
+        width = (int)(w * aspectDiff);
+    }
+    if(aspectDiff > 1.0)
+    {
+        bottom = (int)(h * (1.0f - (aspect / targetAspect)) / 2.0f );
+        height = (int)(h / aspectDiff);
+    }
+    
+    glScissor(left , bottom, width, height);
 }
 
 void Renderer::RenderTexturedQuad(std::shared_ptr<Texture> sprite, const glm::mat4 &transform)
@@ -112,7 +137,7 @@ void Renderer::RenderText(const glm::ivec2 &position, std::shared_ptr<Font> font
     int slot = GetBufferTextureSlot(font->GetTexture()->GetTextureID());
 
     unsigned int x_pos = position.x;
-    unsigned int y_pos = (int)Renderer::Get().GetRenderSize().y - position.y;
+    unsigned int y_pos = (int)Renderer::Get().GetGameSize().y - position.y;
 
     float y_offset = 0.0f;
     switch(valign)
@@ -232,10 +257,12 @@ void Renderer::DrawQuadBuffer()
     int width, height;
     SDL_GetWindowSize(m_pWindow, &width, &height);
 
-    glm::mat4 projection = glm::ortho(0.0f, (float)width, 0.0f, (float)height, -1.0f, 1.0f);
+    glm::mat4 projection = glm::ortho(0.0f, m_GameSize.x, 0.0f, m_GameSize.y, -1.0f, 1.0f);
 
     m_2DShader->Bind();
     m_2DShader->SetMat4("u_MVP", projection);
+    m_2DShader->SetFloat("u_Aspect", (float)width / (float)height);
+    m_2DShader->SetFloat("u_TargetAspect", m_GameSize.x / m_GameSize.y);
 
     for(int i = 0; i < 32; i++)
     {
@@ -278,5 +305,5 @@ int Renderer::GetBufferTextureSlot(unsigned int textureID)
 void Renderer::OnResize(int width, int height)
 {
     glViewport(0, 0, width, height);
-    m_RenderWindowSize = glm::vec2(width, height);
+    // m_GameSize = glm::vec2(width, height);
 }
