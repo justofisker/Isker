@@ -38,7 +38,7 @@ private:
     int m_QuadCount;
     std::array<unsigned int, MAX_TEXTURE_IMAGE_UNITS> m_TextureSlots;
     unsigned int m_iDrawCalls;
-    glm::vec2 m_RenderWindowSize;
+    glm::vec2 m_GameSize;
 public:
     enum class TextVAlign
     {
@@ -57,7 +57,7 @@ public:
     glm::ivec2 CalculateTextSize(std::shared_ptr<Font> font, const std::string &text);
     void RenderEnd();
     void OnResize(int width, int height);
-    inline const glm::vec2 &GetRenderSize() { return m_RenderWindowSize; }
+    inline const glm::vec2 &GetGameSize() { return m_GameSize; }
 private:
     void CreateQuadBuffer(int max_count);
     void DrawQuadBuffer();

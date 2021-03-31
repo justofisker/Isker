@@ -47,7 +47,7 @@ void Transform2D::SetRotation(float rotation)
 
 void Transform2D::RecalculateMatrix()
 {
-    m_Matrix = glm::translate(glm::mat4(1.0f), glm::vec3(m_Translation.x, -m_Translation.y + Renderer::Get().GetRenderSize().y, 0.0f));
+    m_Matrix = glm::translate(glm::mat4(1.0f), glm::vec3(m_Translation.x, -m_Translation.y + Renderer::Get().GetGameSize().y, 0.0f));
     m_Matrix = glm::scale(m_Matrix, glm::vec3(m_Scale, 1.0f));
     m_Matrix = glm::rotate(m_Matrix, m_Rotation, glm::vec3(0.0f, 0.0f, 1.0f));
 }

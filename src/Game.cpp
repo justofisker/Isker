@@ -2,17 +2,18 @@
 
 #include <glm/gtc/constants.hpp>
 #include <box2d/box2d.h>
+#include <entt/entt.hpp>
 
 #include "Input.hpp"
 #include "Render/Renderer.hpp"
 #include "Render/Texture.hpp"
 #include "Component/Transform2D.hpp"
 
-b2World *world;
-b2Body *groundBody;
-b2Body *body;
-int32 velocityIterations = 8;
-int32 positionIterations = 3;
+static b2World *world;
+static b2Body *groundBody;
+static b2Body *body;
+static int32 velocityIterations = 8;
+static int32 positionIterations = 3;
 
 void Game::Init(SDL_Window *pWindow)
 {
@@ -51,7 +52,7 @@ void Game::Frame(float delta)
     static std::shared_ptr<SubTexture> subTextureTest2 = std::make_shared<SubTexture>(subTextureTest1, 100, 100, 800, 800);
     static std::shared_ptr<Font> robotoFont = std::make_shared<Font>(FontBuilder(), "asset/font/Roboto/Roboto-Regular.ttf", 34); 
 
-    auto& RenderSize = Renderer::Get().GetRenderSize();
+    auto& RenderSize = Renderer::Get().GetGameSize();
 
     Renderer::Get().RenderBegin();
 
