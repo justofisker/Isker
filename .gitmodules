@@ -1,12 +1,12 @@
 [submodule "thirdparty/freetype"]
-	path = thirdparty/freetype
+	path = Isker/thirdparty/freetype
 	url = https://github.com/freetype/freetype
 [submodule "thirdparty/glm"]
-	path = thirdparty/glm
+	path = Isker/thirdparty/glm
 	url = https://github.com/g-truc/glm
 [submodule "thirdparty/box2d"]
-	path = thirdparty/box2d
+	path = Isker/thirdparty/box2d
 	url = https://github.com/erincatto/box2d
 [submodule "thirdparty/entt"]
-	path = thirdparty/entt
+	path = Isker/thirdparty/entt
 	url = https://github.com/skypjack/entt
