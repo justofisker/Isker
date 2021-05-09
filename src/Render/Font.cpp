@@ -1,7 +1,7 @@
 #include "Font.hpp"
 
 #include <freetype/freetype.h>
-#include <SDL2/SDL_log.h>
+#include <SDL_log.h>
 #include <glad/glad.h>
 
 Font::Font(const FontBuilder &fontBuilder, const std::string& font_path, int font_size)

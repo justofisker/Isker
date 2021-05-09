@@ -1,4 +1,4 @@
-#include <SDL2/SDL.h>
+#include <SDL.h>
 #include <iostream>
 
 #if __EMSCRIPTEN__
@@ -63,9 +63,9 @@ void gameLoop()
     }
 }
 
-int main()
+int main(int argc, char* argv[])
 {
-    if(SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO) != 0)
+    if(SDL_Init(SDL_INIT_VIDEO) != 0)
     {
         SDL_Log("Failed SDL Init!\n");
         exit(0);

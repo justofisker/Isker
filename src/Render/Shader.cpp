@@ -4,7 +4,7 @@
 #include <vector>
 
 #include <glad/glad.h>
-#include <SDL2/SDL_log.h>
+#include <SDL_log.h>
 
 unsigned int Shader::s_CurrentlyBoundProgram = UINT32_MAX;
 

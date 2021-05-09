@@ -3,7 +3,7 @@
 #include <string>
 #include <memory>
 
-#include <SDL2/SDL_stdinc.h>
+#include <SDL_stdinc.h>
 #include <glm/vec2.hpp>
 
 class Texture {

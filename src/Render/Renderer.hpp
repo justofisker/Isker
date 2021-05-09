@@ -6,7 +6,7 @@
 #include <glm/vec4.hpp>
 #include <glm/vec2.hpp>
 #include <glm/mat4x4.hpp>
-#include <SDL2/SDL.h>
+#include <SDL.h>
 
 #include "../Singleton.hpp"
 #include "Shader.hpp"
