@@ -19,6 +19,7 @@ set (source
     "${PROJECT_SOURCE_DIR}/src/Component/Transform2D.cpp"
     "${PROJECT_SOURCE_DIR}/src/Component/Transform2D.hpp"
     "${PROJECT_SOURCE_DIR}/src/one_time_implements.c"
+    "${PROJECT_SOURCE_DIR}/src/Singleton.hpp"
     "${PROJECT_SOURCE_DIR}/thirdparty/glad/src/glad.c"
     )
 
