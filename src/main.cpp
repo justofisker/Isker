@@ -8,7 +8,7 @@
 #include "Render/Renderer.hpp"
 #include "Game.hpp"
 #include "Input.hpp"
-#include "IskerAPI.hpp"
+
 
 static bool bRunning = 1;
 
@@ -63,7 +63,7 @@ void gameLoop()
     }
 }
 
-ISKERAPI int iskerMain()
+int main()
 {
     if(SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO) != 0)
     {

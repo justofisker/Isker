@@ -1,1 +1,0 @@
-#include <Isker/EntryPoint.hpp>
