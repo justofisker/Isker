@@ -47,7 +47,7 @@ void Renderer::Init(SDL_Window *pWindow)
     m_2DShader->SetIntArray("u_Textures", MAX_TEXTURE_IMAGE_UNITS, textures);
     m_iDrawCalls = 0;
 
-    m_TextureSlots.fill(SDL_MAX_UINT32);
+    m_TextureSlots.fill(~0u);
 
     int width, height;
     SDL_GetWindowSize(m_pWindow, &width, &height);
@@ -266,11 +266,11 @@ void Renderer::DrawQuadBuffer()
 
     for(int i = 0; i < 32; i++)
     {
-        if(m_TextureSlots[i] != SDL_MAX_UINT32)
+        if(m_TextureSlots[i] != ~0u)
         {
             glActiveTexture(GL_TEXTURE0 + i);
             glBindTexture(GL_TEXTURE_2D, m_TextureSlots[i]);
-            m_TextureSlots[i] = SDL_MAX_UINT32;
+            m_TextureSlots[i] = ~0u;
         } else break;
     }
 
@@ -288,7 +288,7 @@ int Renderer::GetBufferTextureSlot(unsigned int textureID)
     int slot = -1;
     for(int i = 0; i < 32; i++)
     {
-        if(m_TextureSlots[i] == SDL_MAX_UINT32)
+        if(m_TextureSlots[i] == ~0u)
         {
             m_TextureSlots[i] = textureID;
             return i;

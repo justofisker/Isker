@@ -13,7 +13,7 @@ private:
     glm::ivec2 m_Size;
 protected:
     Texture(unsigned int textureID, const glm::ivec2 &size, int channels);
-    void InvalidateTextureID() { m_TextureID = SDL_MAX_UINT32; }
+    void InvalidateTextureID() { m_TextureID = ~0u; }
 public:
     struct TextureUV {
         glm::vec2 bottomLeft;

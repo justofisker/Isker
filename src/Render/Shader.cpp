@@ -9,7 +9,7 @@
 unsigned int Shader::s_CurrentlyBoundProgram = UINT32_MAX;
 
 Shader::Shader(const std::string &vertex_path, const std::string &fragment_path)
-    : m_ProgramID(SDL_MAX_UINT32)
+    : m_ProgramID(~0u)
 {
     auto read_file = [](const std::string &path) -> std::string {
         constexpr auto read_size = std::size_t{4096};
@@ -102,7 +102,7 @@ void Shader::Bind() const
 
 bool Shader::IsValid() const
 {
-    return m_ProgramID != SDL_MAX_UINT32;
+    return m_ProgramID != ~0u;
 }
 
 void Shader::SetFloat(const std::string &uniform, float v)

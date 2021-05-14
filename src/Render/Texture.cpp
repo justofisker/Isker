@@ -34,7 +34,7 @@ Texture::Texture(const std::string &file_path)
 
 Texture::~Texture()
 {
-    if(m_TextureID != SDL_MAX_UINT32) glDeleteTextures(1, &m_TextureID);
+    if(m_TextureID != ~0u) glDeleteTextures(1, &m_TextureID);
 }
 
 Texture::Texture(unsigned int textureID, const glm::ivec2 &size, int channels)
