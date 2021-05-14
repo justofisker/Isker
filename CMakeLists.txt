@@ -85,7 +85,7 @@ if (NOT DEFINED EMSCRIPTEN)
     
     add_custom_command(TARGET Isker POST_BUILD
         COMMAND ${CMAKE_COMMAND} -E copy_directory
-        ${CMAKE_SOURCE_DIR}/asset/ $<TARGET_FILE_DIR:Isker>/asset/)
+        ${CMAKE_SOURCE_DIR}/asset/ ${CMAKE_BINARY_DIR}/asset/)
 endif ()
 
 set(BOX2D_BUILD_UNIT_TESTS OFF CACHE INTERNAL "")
