@@ -22,7 +22,7 @@ public:
     std::shared_ptr<Font> CreateFont(const std::string &font_path, int font_size);
 private:
     void CreateFontContext();
-    void DestroyFontContect();
+    void DestroyFontContext();
     friend class Font;
 };
 

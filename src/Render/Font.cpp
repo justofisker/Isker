@@ -120,7 +120,7 @@ FontBuilder::FontBuilder()
 FontBuilder::~FontBuilder()
 {
     s_FontCreatorCount--;
-    if(!s_FontCreatorCount) DestroyFontContect();
+    if(!s_FontCreatorCount) DestroyFontContext();
 }
 
 std::shared_ptr<Font> FontBuilder::CreateFont(const std::string &font_path, int font_size)
@@ -137,7 +137,7 @@ void FontBuilder::CreateFontContext()
     }
 }
 
-void FontBuilder::DestroyFontContect()
+void FontBuilder::DestroyFontContext()
 {
     FT_Done_FreeType((FT_Library)s_FreetypeLibrary);
     s_FreetypeLibrary = nullptr;
